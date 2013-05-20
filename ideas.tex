@@ -6,19 +6,22 @@
 \begin{document}
 \section*{Reconocimiento automático del habla en Lojban}
 	Se pretende traducir un archivo de audio que contenga una
-	frase en lojban, a su representación escrita.	Se requiere la
-	identificación de sílabas y su correcta agrupación en palabras.
+	frase en lojban, a su representación escrita. Para poder realizar
+	dicha representación se requiere la identificación de sílabas,
+	su correcta agrupación en palabras y su traducción escrita.
 
-	La elección del lenguaje se debe a que es de escritura
+	La elección del lenguaje se debe a que el mismo es de escritura
 	y pronunciación fonética, de gramática no ambigua y de
-	diccionario reducido.  Lo cual debería de simplificar el
+	diccionario reducido. Lo cual debería de simplificar el
 	procesamiento, haciéndolo más robusto al ruido y posible de
-	realizar online
+	realizar online.
 
-	Se considerará solo un hablante por vez.
+	Para simplificar el problema se considerará solo un hablante
+	por vez y se limitará al reconocimiento de números.
 
-	Como acotación se podrá limitar el problema al reconocimiento
-	de números.
+	Un uso podría ser para que personas paralíticas puedan escribir
+	en computadora con la voz, ya que como se comentó anteriormente
+	es un lenguaje menos sensible al ruido.
 
 	\subsection*{Referencias}
 		\begin{itemize}
@@ -68,7 +71,7 @@
 
 	\clearpage
 
-\section*{Ecualizador Parametrico}
+\section*{Ecualizador Paramétrico}
 Se pretende desarrollar un ecualizador parametrico digital de 10 bandas.
 
  Mediante un algoritmo que permita modificar la frecuencia central, ancho
@@ -91,6 +94,8 @@ sonido deseado.
 			DRM. (by: E. Alcalde, G.  Agujeta, J. Prieto,
 			I. Izquierdo, A. Sanzberro).
 		\end{itemize}
+
+	\clearpage
 \end{document}
 
 
