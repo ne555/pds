@@ -5,44 +5,92 @@
 
 \begin{document}
 \section*{Reconocimiento automático del habla en Lojban}
-	Se pretende traducir un archivo de audio que contenga una frase en lojban, a su representación escrita.
-	Se requiere la identificación de sílabas y su correcta agrupación en palabras. 
+	Se pretende traducir un archivo de audio que contenga una
+	frase en lojban, a su representación escrita.	Se requiere la
+	identificación de sílabas y su correcta agrupación en palabras.
 
-	La elección del lenguaje se debe a que es de escritura y pronunciación fonética, de gramática no ambigua y de diccionario reducido.
-	Lo cual debería de simplificar el procesamiento, haciéndolo más robusto al ruido y posible de realizar online
+	La elección del lenguaje se debe a que es de escritura
+	y pronunciación fonética, de gramática no ambigua y de
+	diccionario reducido.  Lo cual debería de simplificar el
+	procesamiento, haciéndolo más robusto al ruido y posible de
+	realizar online
 
-	Se considerará solo un hablante por vez. 
+	Se considerará solo un hablante por vez.
 
-	Como acotación se podrá limitar el problema al reconocimiento de números.
+	Como acotación se podrá limitar el problema al reconocimiento
+	de números.
 
 	\subsection*{Referencias}
 		\begin{itemize}
-			\item Fundamentals of Speech Recognition (by: Lawrence Rabiner, Biing-Hwang Juang)
-			\item Introduction to Digital Speech Processing (by: Lawrence Rabiner and Ronald Schafer)
-			\item Digital Speech Processing, Synthesis, and Recognition (by: Sadaoki Furui)
-			\item Speech Recognition with Primarily Temporal Cues (by: Robert V. Shannon(1), Fan-Gang Zeng, Vivek Kamath, John Wygonski, Michael Ekelid)
-			\item "Representación de la voz en el reconocimiento del habla." Quark 21 (2001): 63-71. (by: Nadeu, Climent)
+			\item Fundamentals of Speech Recognition (by:
+			Lawrence Rabiner, Biing-Hwang Juang)
+			\item Introduction to Digital Speech Processing
+			(by: Lawrence Rabiner and Ronald Schafer)
+			\item Digital Speech Processing, Synthesis,
+			and Recognition (by: Sadaoki Furui)
+			\item Speech Recognition with Primarily Temporal
+			Cues (by: Robert V. Shannon(1), Fan-Gang Zeng,
+			Vivek Kamath, John Wygonski, Michael Ekelid)
+			\item "Representación de la voz en el
+			reconocimiento del habla." Quark 21 (2001):
+			63-71. (by: Nadeu, Climent)
 		\end{itemize}
 	
 	\clearpage
 
 \section*{Detección de la partitura de una canción instrumental}
-	La idea del proyecto consiste en generar la partitura de una canción instrumental ingresada por el usuario. 
-	El algoritmo consistirá en un análisis en tiempo y frecuencia  de la señal con el fin de ir detectando cada una de las notas que se interpretan a lo largo de la canción.
+	La idea del proyecto consiste en generar la partitura de una
+	canción instrumental ingresada por el usuario.  El algoritmo
+	consistirá en un análisis en tiempo y frecuencia  de la
+	señal con el fin de ir detectando cada una de las notas que se
+	interpretan a lo largo de la canción.
 
-	Para simplificar el problema, realizaremos el trabajo a partir de una canción interpretada por un solo instrumento.
+	Para simplificar el problema, realizaremos el trabajo a partir
+	de una canción interpretada por un solo instrumento.
 
-	Consideramos que es una aplicación muy interesante para personas que están aprendiendo a tocar instrumentos y todavía no poseen un oído musical muy desarrollado como para poder conocer la partitura de una canción mientras la escuchan.
+	Consideramos que es una aplicación muy interesante para personas
+	que están aprendiendo a tocar instrumentos y todavía no poseen
+	un oído musical muy desarrollado como para poder conocer la
+	partitura de una canción mientras la escuchan.
 
 	\subsection*{Referencias}
 		\begin{itemize}
-			\item Recognition of piano notes with the aid of FRM filters (Say Wei Foo; Wei Thai Lee).
-			\item Extracting note onsets from musical recordings (Alonso, M.; Richard, G. , David, B.).
-			\item Application of FRM filters for musical notes separation (Say Wei Foo; Lee, E.W.T.L.).
-			\item Musical note segmentation employing combined time and frequency analyses (Velikic, G.; Titlebaum, Edward L. ; Bocko, M.F.).
+			\item Recognition of piano notes with the aid
+			of FRM filters (Say Wei Foo; Wei Thai Lee).
+			\item Extracting note onsets from musical
+			recordings (Alonso, M.; Richard, G. , David, B.).
+			\item Application of FRM filters for musical
+			notes separation (Say Wei Foo; Lee, E.W.T.L.).
+			\item Musical note segmentation employing
+			combined time and frequency analyses (Velikic,
+			G.; Titlebaum, Edward L. ; Bocko, M.F.).
 		\end{itemize}
 
 	\clearpage
+
+\section*{Ecualizador Parametrico}
+Se pretende desarrollar un ecualizador parametrico digital de 10 bandas.
+
+ Mediante un algoritmo que permita modificar la frecuencia central, ancho
+de banda y la ganancia.
+
+Se pretende corregir una señal sonora de un instrumento musical
+aumentando la  ganancia y/o cambiando la frecuencia para producir el
+sonido deseado.
+
+	\subsection*{Referencias}
+		\begin{itemize}
+			\item Control activo de ruido con ecualización
+			del camino secundario. ( by: A. Ortega,
+			E. Masgrau, E. Lleida).
+			\item Aplicación De Un Procesador Difuso Tipo
+			II En La Ecualización De Canales No Lineales
+			Y Variantes En El Tiempo. ( by: Miguel A.
+			Melgarejo Rey, Carlos A. Peña Reyes).
+			\item Algoritma de ecualización para un receptor
+			DRM. (by: E. Alcalde, G.  Agujeta, J. Prieto,
+			I. Izquierdo, A. Sanzberro).
+		\end{itemize}
 \end{document}
 
 
