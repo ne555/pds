@@ -35,18 +35,25 @@
 		[9], etcétera.
 
 	\section{Introducción}
-		Se pretende traducir un archivo de audio que números en Lojban
+		Se pretende traducir un archivo de audio con números en Lojban
 		a su representación escrita.
 		%justificación del lenguaje
 		Si bien no pueden aprovecharse el uso de la gramática
 		no ambigua y libre de contexto (que fue lo que impulsó la
 		elección del idioma) se aprecian algunas características que
-		pueden facilitar la tarea, como ser que los números están
-		compuestos por concatenación de dígitos que todos los dígitos
-		son monosílabos compuestos por una consonante y vocal (en ese
-		orden) que se utiliza la misma vocal en a lo sumo tres dígitos,
-		que las consonantes que acompañan vocales repetidas son de
-		sonidos muy diferentes
+		pueden facilitar la tarea, como ser
+		\begin{itemize}\itemsep0pt
+		\item los números están compuestos por concatenación de dígitos
+		\item todos los dígitos son monosílabos compuestos por una consonante y vocal
+			(en ese orden)
+		\item se utiliza la misma vocal en a lo sumo tres dígitos,
+		\item las consonantes que acompañan vocales repetidas son de sonidos muy diferentes
+		\end{itemize}
+
+		En el Cuadro~\ref{tab:digitos} puede verse la correspondencia entre los dígitos decimales
+		y su representación en Lojban. La pronunciación es igual al español
+		con excepción de los números $3$ y $6$ que se pronuncian como indica
+		entre paréntesis.
 
 		%lista de dígitos
 		\begin{table}[h]
@@ -56,6 +63,7 @@
 				$5$ mu & $6$ xa(ja) & $7$ ze & $8$ bi & $9$ so\\
 			\end{tabular}
 			\caption{Dígitos en lojban}
+			\label{tab:digitos}
 		\end{table}
 
 		%Procesamiento
@@ -76,8 +84,8 @@
 		Esta información se encontrará condensada en diversos
 		parámetros %lista
 			\begin{itemize} \itemsep0pt
-				\item Momentos estadísticos (media, varianza, simetría, curtosis) 
-				\item Coeficientes ceptrales (formantes 1 y 2) 
+				\item Momentos estadísticos (media, varianza, simetría, curtosis)
+				\item Coeficientes ceptrales (formantes 1 y 2)
 				\item Modelo AR equivalente. Representado mediante PLP o LSP
 			\end{itemize}
 
@@ -87,6 +95,13 @@
 
 		El diccionario se constituirá por la concatenación de
 		estas características a lo largo de la vocal y del fonema
+
+		\begin{figure}
+			\fbox{
+				\input{diagrama_en_bloque}
+			}
+			\caption{Diagrama en bloques}
+		\end{figure}
 
 	\section{Clasificación}
 		Como se mencionó antes las vocales se encuentran
@@ -106,12 +121,6 @@
 		tres candidatos.  Se resolverá mediante el uso de DTW
 		durante todo el fonema
 
-		\begin{figure}
-			\fbox{
-				\input{diagrama_en_bloque}
-			}
-			\caption{Diagrama en bloques}
-		\end{figure}
 
 	\section{Bibliografía}
 		[1] Ecualización de Histogramas Adaptativa en
@@ -140,14 +149,14 @@
 		\emph{Rabiner Schafer}
 
 
-		[7] Dynamic Time Warping Algorithm Review. 
+		[7] Dynamic Time Warping Algorithm Review.
 		\emph{Pavel Senin}
 
 
-		[8] Fundamentals of Speech Recognition. 
+		[8] Fundamentals of Speech Recognition.
 		\emph{Lawrence Rabiner, Biing-Hwang Juang}
 
-		[9] Continuous Speech Recognition using PLP Analysis with Multilayer Perceptrons. 
+		[9] Continuous Speech Recognition using PLP Analysis with Multilayer Perceptrons.
 		\emph{Morgan, N.; Hermansky, H.; Bourlard, H.; Kohn, P.; Wooters, C.}
 		
 	
