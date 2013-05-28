@@ -29,8 +29,14 @@
 	sonidos muy diferentes
 
 	%lista de dígitos
-	0 no pa re ci(shi) vo
-	mu xa(ja) ze bi so 9
+	\begin{table}[h]
+		\center
+		\begin{tabular}{lllll}
+			$0$ no & $1$ pa & $2$ re & $3$ ci(shi) & $4$ vo\\
+			$5$ mu & $6$ xa(ja) & $7$ ze & $8$ bi & $9$ so\\
+		\end{tabular}
+		\caption{Dígitos en lojban}
+	\end{table}
 
 	%Procesamiento
 	Se procesará cada dígito de forma aislada, suponiendo
@@ -49,9 +55,11 @@
 		respuesta en frecuencia de las vocales y consonantes.
 		Esta información se encontrará condensada en diversos
 		parámetros %lista
-			- Momentos estadísticos (media, varianza, simetría, curtosis) 
-			- Coeficientes ceptrales (formantes 1 y 2) 
-			- Modelo AR equivalente. Representado mediante PLP o LSP
+			\begin{itemize} \itemsep0pt
+				\item Momentos estadísticos (media, varianza, simetría, curtosis) 
+				\item Coeficientes ceptrales (formantes 1 y 2) 
+				\item Modelo AR equivalente. Representado mediante PLP o LSP
+			\end{itemize}
 
 		Estos parámetros serán calculados por ventanas
 		temporales de $20ms$ a las que se ajustó mediante la
@@ -79,7 +87,9 @@
 		durante todo el fonema
 
 		\begin{figure}
-			\input{diagrama_en_bloque}
+			\fbox{
+				\input{diagrama_en_bloque}
+			}
 			\caption{Diagrama en bloques}
 		\end{figure}
 
