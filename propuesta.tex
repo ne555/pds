@@ -3,6 +3,10 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 
+\usepackage{gnuplot-lua-tikz}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
+
 \title{Reconocimiento automático de dígitos en Lojban a partir de señal sonora}
 \author{Bedrij \and Goette \and Gómez}
 \date{}
@@ -55,6 +59,11 @@
 
 		Luego de identificar la vocal, se tendrán a lo sumo tres candidatos. 
 		Se resolverá mediante el uso de DTW durante todo el fonema
+
+		\begin{figure}
+			\input{diagrama_en_bloque}
+			\caption{Diagrama en bloques}
+		\end{figure}
 
 		
 	

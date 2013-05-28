@@ -1,0 +1,77 @@
+\begin{tikzpicture}[
+	remember picture,
+	nonterminal/.style={
+		rectangle,
+		minimum size=6mm,
+		%very thick,
+		solid,
+		inner sep=1mm,
+		draw
+	},
+	terminal/.style={
+		circle,
+		solid,
+		minimum size=3mm,
+		inner sep=0pt,
+		%very thick,
+		draw
+	},
+	txt/.style={
+		nonterminal,
+		text width=2cm,
+		anchor=center,
+		align=center,
+	},
+	group/.style={
+		draw,
+		line width=1pt,
+		dash pattern=on 3pt off 1pt,
+		inner sep=4mm,
+		rectangle,
+		%rounded corners
+	},
+]
+\matrix[row sep=5mm, column sep=5mm]{
+	%first row
+	%& \node (window) [nonterminal] {Ventana}; & \\
+	%second row
+	\node (in) [terminal] {}; & 
+	\node (x) [terminal] {$\times$}; & & &
+	%\node (mel) [nonterminal] {MEL}; &
+	\node (caracteristicas) [group] {
+		\begin{tikzpicture}
+			\node (AR) [txt] {Modelo AR};
+			\node (CC) [txt,below of=AR] {Coeficientes Ceptrales};
+			\node (EM) [txt,below of=CC] {Momentos Estadísticos};
+		\end{tikzpicture}
+	}; &
+	\node (clasificador) [group] {
+		\begin{tikzpicture}
+			\node (DTW) [txt] {DTW};
+			\node (dict) [txt,below of=DTW] {Diccionario};
+			\draw[solid,-latex] (dict) -> (DTW);
+		\end{tikzpicture}
+	}; \\
+};
+\node (window) [node distance=4em,above of=x,nonterminal] {
+	\input{ventana}
+}; 
+\node (out) [right=of DTW,terminal] {};
+
+\draw[-latex] (in) -> (x);
+%\draw[-latex] (x) -> (mel);
+%\draw[-latex] (mel) -> (caracteristicas);
+\draw[-latex] (x) -> (caracteristicas);
+%\draw[-latex] (caracteristicas.east) -- (DTW.west);
+\draw[-latex] (caracteristicas.east|-DTW.west) -> (DTW.west);
+%\draw[-latex] (caracteristicas) -> (DTW);
+\draw[-latex] (DTW.east) -> (out);
+\draw[-latex] (window) -> (x);
+
+\node at (window.north) [above] {Ventana};
+\node at (caracteristicas.south) [below] {Características};
+\node at (clasificador.south) [below] {Clasificador};
+\node at (in.west) [left] {Input};
+\node at (out.east) [right] {Output};
+\end{tikzpicture}
+
