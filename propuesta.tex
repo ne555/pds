@@ -14,41 +14,61 @@
 
 \begin{document}
 	\maketitle
+	\section{Estado del arte}
+		A partir de una búsqueda bibliográfica hemos encontrado que existen
+		diversos métodos que se pueden utilizar para realizar un análisis de
+		las señales de audio con el fin de extraer características de las mismas
+		que puedan utilizarse para poder obtener sus representaciones escritas.
+
+		Entre dichos métodos se destacan la utilización de coeficientes
+		cepstrales [1], codificación predictiva lineal (LPC ) [2], perceptual
+		linear predictive (PLP) [3], pares de líneas espectrales (LSP) [4][5],
+		banco de filtros [6].
+
+
+		Asimismo existen numerosas técnicas que permiten clasificar las señales
+		mediante las características previamente obtenidas que incluyen desde
+		cálculos de distancias entre la señal que se desea procesar y una base
+		de datos de ejemplos a métodos de inteligencia computacional. Entre
+		éstas podemos nombrar el cálculo de la distancia euclídea, Dinamic
+		Time Warping [7],  cuantización vectorial [8], perceptrón multicapa
+		[9], etcétera.
+
 	\section{Introducción}
-	Se pretende traducir un archivo de audio que números en Lojban
-	a su representación escrita.
-	%justificación del lenguaje
-	Si bien no pueden aprovecharse el uso de la gramática
-	no ambigua y libre de contexto (que fue lo que impulsó la
-	elección del idioma) se aprecian algunas características que
-	pueden facilitar la tarea, como ser que los números están
-	compuestos por concatenación de dígitos que todos los dígitos
-	son monosílabos compuestos por una consonante y vocal (en ese
-	orden) que se utiliza la misma vocal en a lo sumo tres dígitos,
-	que las consonantes que acompañan vocales repetidas son de
-	sonidos muy diferentes
+		Se pretende traducir un archivo de audio que números en Lojban
+		a su representación escrita.
+		%justificación del lenguaje
+		Si bien no pueden aprovecharse el uso de la gramática
+		no ambigua y libre de contexto (que fue lo que impulsó la
+		elección del idioma) se aprecian algunas características que
+		pueden facilitar la tarea, como ser que los números están
+		compuestos por concatenación de dígitos que todos los dígitos
+		son monosílabos compuestos por una consonante y vocal (en ese
+		orden) que se utiliza la misma vocal en a lo sumo tres dígitos,
+		que las consonantes que acompañan vocales repetidas son de
+		sonidos muy diferentes
 
-	%lista de dígitos
-	\begin{table}[h]
-		\center
-		\begin{tabular}{lllll}
-			$0$ no & $1$ pa & $2$ re & $3$ ci(shi) & $4$ vo\\
-			$5$ mu & $6$ xa(ja) & $7$ ze & $8$ bi & $9$ so\\
-		\end{tabular}
-		\caption{Dígitos en lojban}
-	\end{table}
+		%lista de dígitos
+		\begin{table}[h]
+			\center
+			\begin{tabular}{lllll}
+				$0$ no & $1$ pa & $2$ re & $3$ ci(shi) & $4$ vo\\
+				$5$ mu & $6$ xa(ja) & $7$ ze & $8$ bi & $9$ so\\
+			\end{tabular}
+			\caption{Dígitos en lojban}
+		\end{table}
 
-	%Procesamiento
-	Se procesará cada dígito de forma aislada, suponiendo
-	resuelto el problema de separar un número en sus dígitos.
-	La clasificación se logra mediante una comparación contra una
-	base de datos buscándose el más parecido.
+		%Procesamiento
+		Se procesará cada dígito de forma aislada, suponiendo
+		resuelto el problema de separar un número en sus dígitos.
+		La clasificación se logra mediante una comparación contra una
+		base de datos buscándose el más parecido.
 
-	Por motivos de costo computacional, y de robustez, no se
-	utilizará la señal temporal de forma cruda sino que se
-	extraerán características.  Además, considerando las
-	diferencias de tiempo y velocidad de habla, se utilizará
-	\emph{dynamic time warping} (DTW) como medida de distancia.
+		Por motivos de costo computacional, y de robustez, no se
+		utilizará la señal temporal de forma cruda sino que se
+		extraerán características.  Además, considerando las
+		diferencias de tiempo y velocidad de habla, se utilizará
+		\emph{dynamic time warping} (DTW) como medida de distancia.
 
 	\section{Características}
 		Para distinguir los fonemas se analizará la
@@ -93,6 +113,42 @@
 			\caption{Diagrama en bloques}
 		\end{figure}
 
+	\section{Bibliografía}
+		[1] Ecualización de Histogramas Adaptativa en
+		el Dominio Cepstral para Reconocimiento de Voz Robusto
+		\emph{Carmen Benítez, Ángel de la Torre, José C. Segura, Javier Ramírez, Antonio J. Rubio.}
+
+
+		[2] Feature Extraction for Speech Recogniton
+		\emph{Manish P. Kesarkar}
+
+
+		[3] Perceptual Linear Predictive (PLP) Analysis of Speech
+		\emph{Hynek Hermansky}
+
+
+		[4] A Review of Line Spectral Pairs
+		\emph{Ian Vince McLoughlin}
+
+
+		[5] The Distance Measure for line Spectrum Pairs
+		Applied to Speech Recognition
+		\emph{Fang Zheng, Zhanjiang Song, Ling Li, Wenjian Yu, Fengzhou Zheng, and Wenhu Wu}
+
+
+		[6] Digital Processing of Speech Signals
+		\emph{Rabiner Schafer}
+
+
+		[7] Dynamic Time Warping Algorithm Review. 
+		\emph{Pavel Senin}
+
+
+		[8] Fundamentals of Speech Recognition. 
+		\emph{Lawrence Rabiner, Biing-Hwang Juang}
+
+		[9] Continuous Speech Recognition using PLP Analysis with Multilayer Perceptrons. 
+		\emph{Morgan, N.; Hermansky, H.; Bourlard, H.; Kohn, P.; Wooters, C.}
 		
 	
 
