@@ -15,50 +15,68 @@
 \begin{document}
 	\maketitle
 	\section{Introducción}
-	Se pretende traducir un archivo de audio que números en Lojban a su representación escrita.
+	Se pretende traducir un archivo de audio que números en Lojban
+	a su representación escrita.
 	%justificación del lenguaje
-	Si bien no pueden aprovecharse el uso de la gramática no ambigua y libre de contexto
-	(que fue lo que impulsó la elección del idioma)
-	se aprecian algunas características que pueden facilitar la tarea, como ser
-	que los números están compuestos por concatenación de dígitos
-	que todos los dígitos son monosílabos compuestos por una consonante y vocal (en ese orden)
-	que se utiliza la misma vocal en a lo sumo tres dígitos, 
-	que las consonantes que acompañan vocales repetidas son de sonidos muy diferentes
+	Si bien no pueden aprovecharse el uso de la gramática
+	no ambigua y libre de contexto (que fue lo que impulsó la
+	elección del idioma) se aprecian algunas características que
+	pueden facilitar la tarea, como ser que los números están
+	compuestos por concatenación de dígitos que todos los dígitos
+	son monosílabos compuestos por una consonante y vocal (en ese
+	orden) que se utiliza la misma vocal en a lo sumo tres dígitos,
+	que las consonantes que acompañan vocales repetidas son de
+	sonidos muy diferentes
 
 	%lista de dígitos
 	0 no pa re ci(shi) vo
 	mu xa(ja) ze bi so 9
 
 	%Procesamiento
-	Se procesará cada dígito de forma aislada, suponiendo resuelto el problema de separar un número en sus dígitos.
-	La clasificación se logra mediante una comparación contra una base de datos buscándose el más parecido.
-	
-	Por motivos de costo computacional, y de robustez, no se utilizará la señal temporal de forma cruda sino que se extraerán características.
-	Además, considerando las diferencias de tiempo y velocidad de habla, se utilizará \emph{dynamic time warping} (DTW) como medida de distancia.
+	Se procesará cada dígito de forma aislada, suponiendo
+	resuelto el problema de separar un número en sus dígitos.
+	La clasificación se logra mediante una comparación contra una
+	base de datos buscándose el más parecido.
+
+	Por motivos de costo computacional, y de robustez, no se
+	utilizará la señal temporal de forma cruda sino que se
+	extraerán características.  Además, considerando las
+	diferencias de tiempo y velocidad de habla, se utilizará
+	\emph{dynamic time warping} (DTW) como medida de distancia.
 
 	\section{Características}
-		Para distinguir los fonemas se analizará la respuesta en frecuencia de las vocales y consonantes.
-		Esta información se encontrará condensada en diversos parámetros
-		%lista
-			- Momentos estadísticos (media, varianza, simetría, curtosis)
-			- Coeficientes ceptrales (formantes 1 y 2)
+		Para distinguir los fonemas se analizará la
+		respuesta en frecuencia de las vocales y consonantes.
+		Esta información se encontrará condensada en diversos
+		parámetros %lista
+			- Momentos estadísticos (media, varianza, simetría, curtosis) 
+			- Coeficientes ceptrales (formantes 1 y 2) 
 			- Modelo AR equivalente. Representado mediante PLP o LSP
 
-		Estos parámetros serán calculados por ventanas temporales de $20ms$ a las que se ajustó mediante la escala de Mel.
+		Estos parámetros serán calculados por ventanas
+		temporales de $20ms$ a las que se ajustó mediante la
+		escala de Mel.
 
-		El diccionario se constituirá por la concatenación de estas características a lo largo de la vocal y del fonema
+		El diccionario se constituirá por la concatenación de
+		estas características a lo largo de la vocal y del fonema
 
 	\section{Clasificación}
-		Como se mencionó antes las vocales se encuentran distribuídas en los dígitos, no hallándose más de una por dígito
-		y no teniendo más de tres dígitos la misma vocal.
+		Como se mencionó antes las vocales se encuentran
+		distribuídas en los dígitos, no hallándose más de
+		una por dígito y no teniendo más de tres dígitos la
+		misma vocal.
 
-		Esto sugiere que la identificación de la vocal podría reducir el problema considerablemente. 
-		Problema un poco más sencillo, posible de resolverse simplemente mediante el cálculo de las primeras formantes.
-		Sin embargo surge el inconveniente de separar la vocal de la consonante. 
-		Supondremos que el uso de una heurística para distinguir la porción de estacionariedad será suficiente.
+		Esto sugiere que la identificación de la vocal podría
+		reducir el problema considerablemente.	Problema un poco
+		más sencillo, posible de resolverse simplemente mediante
+		el cálculo de las primeras formantes.	Sin embargo surge
+		el inconveniente de separar la vocal de la consonante.
+		Supondremos que el uso de una heurística para distinguir
+		la porción de estacionariedad será suficiente.
 
-		Luego de identificar la vocal, se tendrán a lo sumo tres candidatos. 
-		Se resolverá mediante el uso de DTW durante todo el fonema
+		Luego de identificar la vocal, se tendrán a lo sumo
+		tres candidatos.  Se resolverá mediante el uso de DTW
+		durante todo el fonema
 
 		\begin{figure}
 			\input{diagrama_en_bloque}
