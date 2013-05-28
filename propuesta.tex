@@ -1,4 +1,5 @@
 \documentclass[a4paper]{article}
+%\documentclass[conference,a4paper,10pt,oneside,final]{tfmpd}
 
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
@@ -50,7 +51,7 @@
 		\item las consonantes que acompañan vocales repetidas son de sonidos muy diferentes
 		\end{itemize}
 
-		En el Cuadro~\ref{tab:digitos} puede verse la correspondencia entre los dígitos decimales
+		En la Cuadro~\ref{tab:digitos} puede verse la correspondencia entre los dígitos decimales
 		y su representación en Lojban. La pronunciación es igual al español
 		con excepción de los números $3$ y $6$ que se pronuncian como indica
 		entre paréntesis.
@@ -96,12 +97,6 @@
 		El diccionario se constituirá por la concatenación de
 		estas características a lo largo de la vocal y del fonema
 
-		\begin{figure}
-			\fbox{
-				\input{diagrama_en_bloque}
-			}
-			\caption{Diagrama en bloques}
-		\end{figure}
 
 	\section{Clasificación}
 		Como se mencionó antes las vocales se encuentran
@@ -121,7 +116,21 @@
 		tres candidatos.  Se resolverá mediante el uso de DTW
 		durante todo el fonema
 
+	\section{Validación}
+		El resultado de la DTW nos brinda una medida de confianza
+		en la clasificación.  Para probar la robustez de los
+		algoritmos, los casos de prueba se contaminarán con
+		distintos niveles de ruido, observando el porcentaje de
+		aciertos en cada caso
 
+
+\newpage
+		\begin{figure}
+			\fbox{
+				\input{diagrama_en_bloque}
+			}
+			\caption{Diagrama en bloques}
+		\end{figure}
 	\section{Bibliografía}
 		[1] Ecualización de Histogramas Adaptativa en
 		el Dominio Cepstral para Reconocimiento de Voz Robusto
