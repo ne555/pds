@@ -7,39 +7,60 @@ debe_dar = [vocales(4,:); vocales(1,:); vocales(2,:); vocales(3,:); vocales(4,:)
 
 
 
-for digito=[8]
+for digito=[0,4,5]
+	digito
 	for L=[1:6]
 	valores = [];
 	tracto = [];
 	lsp_coef = [];
 		archivo = sprintf('./grabaciones/all/%d/%d.wav',digito,L);
 		[signal,fs,bps] = wavread(archivo);
+		signal = signal(:,1);
+
+		umbral = 0.5*dot(signal,signal)/length(signal);
 
 		n = 1024;
 		[frames,t] = ventaneo(signal, n, 2, hanning(n));
 
 		for K=[1:size(frames)(2)]
 			x = frames(:,K);
-			%prediccion lineal
-			[a,err] = prediccion_lineal(x,14);
-			orden = 14;
-			a = a(:,orden);
+			energia = dot(x,x)/(n*0.374); %compensar el ventaneo
 
-			%por supuesto la culpa es de tu lsp
-			r = lsp2(a);
-			r2 =unique(abs(r))*fs/(2*pi);
+			%eliminar las ventanas de silencio
+			if energia>umbral
+				%prediccion lineal
+				[a,err] = prediccion_lineal(x,14);
+				orden = 14;
+				a = a(:,orden);
 
-			valores = [valores;r2'];
+				%por supuesto la culpa es de tu lsp
+				r = lsp2(a);
+				r2 =unique(abs(r))*fs/(2*pi);
 
-			tracto = [tracto,a];
-			lsp_coef = [lsp_coef,r2];
+
+			%else
+			%	a = zeros(14,1);
+			%	r2 = zeros(16,1);
+
+				%si no tiene f0 no es vocal
+				if( r2(2) < 800 )
+					lsp_coef = [lsp_coef,r2];
+				end
+			end
+			%tracto = [tracto,a];
+			%valores = [valores;r2'];
 		end
+
+		%tomar la parte central
+		[rows,cols] = size(lsp_coef);
+		lsp_coef(:, 1:floor(cols/4)) = -100;
+		lsp_coef(:, cols-ceil(cols/4):cols) = -100;
 
 		clf;
 		subplot(2,1,2);
 		hold on;
 		for K=[2:4]
-			plot( t,lsp_coef(K,:), sprintf('-*%d',K-1) );
+			plot( lsp_coef(K,:), sprintf('-*%d',K-1) );
 		end
 		subplot(2,1,1);
 		plot(signal);
