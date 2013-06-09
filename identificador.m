@@ -8,11 +8,11 @@ debe_dar = [vocales(4,:); vocales(1,:); vocales(2,:); vocales(3,:); vocales(4,:)
 
 
 for digito=[8]
-	for L=[0:6]
+	for L=[1:6]
 	valores = [];
 	tracto = [];
 	lsp_coef = [];
-		archivo = sprintf('./grabaciones/all/%d/%d.wav',digito,10*L+digito+1);
+		archivo = sprintf('./grabaciones/all/%d/%d.wav',digito,L);
 		[signal,fs,bps] = wavread(archivo);
 
 		n = 1024;
