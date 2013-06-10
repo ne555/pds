@@ -257,3 +257,87 @@ function voc = clasificar2(x, patron)
 	end
 	[descartar,voc] = min(distancia);
 end
+
+function [frames2,t2] = cortar(signal)
+	%[signal,fs,bps] = wavread(archivo);
+	n = 1024;
+	plot(signal);
+	[frames,t] = ventaneo(signal, n, 2, hanning(n));
+	a = max(abs(signal));
+	m = (a^2)*0.2;
+	frames2 = [];
+	t2 = [];
+	for i=1:size(frames)(2)
+		aux=sum(frames(:,i).^2);
+		if (aux>m)
+			frames2 = [frames2 frames(:,i)]; 
+			t2 = [t2 t(i)];
+		end
+	end
+	
+end
+
+function signal2 = cortar2(signal)
+	a = max(abs(signal));
+	m = (a^2)*0.2;
+	signal2 = [];
+	for i=1:size(signal)
+		if (abs(signal(i))>m)
+			signal2 = [signal2; signal(i)]; 
+		end
+	end
+	
+end
+
+function dif = diferencia(a, b)
+	n = length(a);
+	dif = 0;
+	for i= 1:n
+		dif = dif + abs(a(i)-b(i));
+	end
+	dif = dif/n;
+end
+
+function dif = comparar(m1,m2,m3,m4, num)
+	archivo = sprintf('./%d/m1%d.txt',num,num);
+	c_m1 = load(archivo);
+	archivo = sprintf('./%d/m2%d.txt',num,num);
+	c_m2 = load(archivo);
+	archivo = sprintf('./%d/m3%d.txt',num,num);
+	c_m3 = load(archivo);
+	archivo = sprintf('./%d/m4%d.txt',num,num);
+	c_m4 = load(archivo);
+	dif_m1 = 0;
+	dif_m2 = 0;
+	dif_m3 = 0;
+	dif_m4 = 0;
+	for i = 1:4
+		dif_m1= dif_m1 + diferencia(c_m1(:,i), m1);
+		dif_m2= dif_m2 + diferencia(c_m2(:,i), m2);
+		dif_m3= dif_m3 + diferencia(c_m3(:,i), m3);
+		dif_m4= dif_m4 + diferencia(c_m4(:,i), m4);
+	end
+	dif = dif_m1 + dif_m2 + dif_m3 + dif_m4;
+end
+
+function clase = clasificador(m1,m2,m3,m4)
+	parecidos = zeros(10,1);
+	parecidos(1) = comparar(m1,m2,m3,m4,0);
+	parecidos(2) = comparar(m1,m2,m3,m4,1);
+	parecidos(3) = comparar(m1,m2,m3,m4,2);
+	parecidos(4) = comparar(m1,m2,m3,m4,3);
+	parecidos(5) = comparar(m1,m2,m3,m4,4);
+	parecidos(6) = comparar(m1,m2,m3,m4,5);
+	parecidos(7) = comparar(m1,m2,m3,m4,6);
+	parecidos(8) = comparar(m1,m2,m3,m4,7);
+	parecidos(9) = comparar(m1,m2,m3,m4,8);
+	parecidos(10) = comparar(m1,m2,m3,m4,9);
+	minimo = min(parecidos);
+	clase=11;
+	for i=1:10
+		if (parecidos(i)==minimo)
+			clase = i-1;
+			break;
+		end
+	end
+end
