@@ -358,7 +358,7 @@ function y = mapear(x, mapa)
 end
 
 function vocal = analizar( x )
-	mapa = [1 1 2 2 3 3 4 4 4 5];
+	mapa = [1 1 2 2 3 3 4 4 4 5 5];
 	y = mapear(x,mapa);
 	vocal = mode(y);
 end
@@ -408,6 +408,7 @@ function vocal = dame_la_vocal( signal,fs )
 		result = [result, clasificar2(caracter, patron)];
 	end
 
+	result
 	vocal = analizar(result);
 end
 

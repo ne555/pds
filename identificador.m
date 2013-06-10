@@ -7,10 +7,11 @@ debe_dar = [vocales(4,:); vocales(1,:); vocales(2,:); vocales(3,:); vocales(4,:)
 
 
 estadisticas = [];
-for digito=[1 2 3 4 6 7 8 9]
+for digito=[0 1 2 3 4 5 6 7 8 9]
 	digito
-	lsp_coef = [];
+	all = [];
 	for L=[1:6]
+		lsp_coef = [];
 		archivo = sprintf('./grabaciones/all/%d/%d.wav',digito,L);
 		[signal,fs,bps] = wavread(archivo);
 		signal = signal(:,1);
@@ -45,10 +46,12 @@ for digito=[1 2 3 4 6 7 8 9]
 		%tomar la parte central
 		[rows,cols] = size(lsp_coef);
 		lsp_coef = lsp_coef(:, floor(cols/4):cols-ceil(cols/4));
+
+		all = [all, lsp_coef];
 	end
 
 	%estadisticas
-	estadisticas = [estadisticas; mean( lsp_coef' ) std( lsp_coef' )];
+	estadisticas = [estadisticas; mean( all' ) std( all' )];
 
 	%clf;
 	%subplot(2,1,2);
