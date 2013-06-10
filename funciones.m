@@ -320,18 +320,26 @@ function dif = comparar(m1,m2,m3,m4, num)
 	dif = dif_m1 + dif_m2 + dif_m3 + dif_m4;
 end
 
-function clase = clasificador(m1,m2,m3,m4)
-	parecidos = zeros(10,1);
-	parecidos(1) = comparar(m1,m2,m3,m4,0);
-	parecidos(2) = comparar(m1,m2,m3,m4,1);
-	parecidos(3) = comparar(m1,m2,m3,m4,2);
-	parecidos(4) = comparar(m1,m2,m3,m4,3);
-	parecidos(5) = comparar(m1,m2,m3,m4,4);
-	parecidos(6) = comparar(m1,m2,m3,m4,5);
-	parecidos(7) = comparar(m1,m2,m3,m4,6);
-	parecidos(8) = comparar(m1,m2,m3,m4,7);
-	parecidos(9) = comparar(m1,m2,m3,m4,8);
-	parecidos(10) = comparar(m1,m2,m3,m4,9);
+function clase = clasificador(m1,m2,m3,m4, vocal)
+	parecidos = inf*ones(10,1);
+
+	contra = [1 6 6; 2 7 7; 3 8 8; 0 4 9; 5 5 5];
+	for K=[1:3]
+		parecidos( contra(vocal,K)+1 ) = comparar(m1,m2,m3,m4, contra(vocal,K) );
+	end
+	
+
+	
+	%parecidos(1) = comparar(m1,m2,m3,m4,0);
+	%parecidos(2) = comparar(m1,m2,m3,m4,1);
+	%parecidos(3) = comparar(m1,m2,m3,m4,2);
+	%parecidos(4) = comparar(m1,m2,m3,m4,3);
+	%parecidos(5) = comparar(m1,m2,m3,m4,4);
+	%parecidos(6) = comparar(m1,m2,m3,m4,5);
+	%parecidos(7) = comparar(m1,m2,m3,m4,6);
+	%parecidos(8) = comparar(m1,m2,m3,m4,7);
+	%parecidos(9) = comparar(m1,m2,m3,m4,8);
+	%parecidos(10) = comparar(m1,m2,m3,m4,9);
 	minimo = min(parecidos);
 	clase=11;
 	for i=1:10
@@ -353,4 +361,49 @@ function vocal = analizar( x )
 	mapa = [1 1 2 2 3 3 4 4 4 5];
 	y = mapear(x,mapa);
 	vocal = mode(y);
+end
+
+function vocal = dame_la_vocal( signal,fs )
+	patron = load('media.txt');
+	lsp_coef = [];
+	signal = signal(:,1); %no estereo
+
+	umbral = 0.5*dot(signal,signal)/length(signal);
+
+	n = 1024;
+	[frames,t] = ventaneo(signal, n, 2, hanning(n));
+
+	for K=[1:size(frames)(2)]
+		x = frames(:,K);
+		energia = dot(x,x)/(n*0.374); %compensar el ventaneo
+
+		%eliminar las ventanas de silencio
+		if energia>umbral
+			%prediccion lineal
+			[a,err] = prediccion_lineal(x,14);
+			orden = 14;
+			a = a(:,orden);
+
+			%por supuesto la culpa es de tu lsp
+			r = lsp2(a);
+			r2 =unique(abs(r))*fs/(2*pi);
+
+			%si no tiene f0 no es vocal
+			if( r2(2) < 800 )
+				lsp_coef = [lsp_coef,r2(2:5)];
+			end
+		end
+	end
+
+	%tomar la parte central
+	[rows,cols] = size(lsp_coef);
+	lsp_coef = lsp_coef(:, floor(cols/4):cols-ceil(cols/4));
+	%clasificar
+	result = [];
+	for K=[1:size(lsp_coef)(2)]
+		%result = [result, clasificar(lsp_coef(:,K), rango)];
+		result = [result, clasificar2(lsp_coef(:,K), patron)];
+	end
+
+	vocal = analizar(result);
 end

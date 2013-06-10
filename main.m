@@ -6,11 +6,13 @@ for digito=[0:9]
 	m2 = [];
 	m3 = [];
 	m4 = [];
-for L=[4:6]
+for L=[6:7]
 	momentos = [];
 	%archivo = sprintf('../grabaciones/all/%d/%d.wav',digito,10*L+digito+1);
 	archivo = sprintf('./grabaciones/all/%d/%d.wav',digito,L);
 	[signal,fs,bps] = wavread(archivo);
+	vocal = dame_la_vocal(signal,fs);
+
 	signal=cortar2(signal);	
 	n = ceil(length(signal)/16);
 	[frames,t] = ventaneo(signal, n, 2, hanning(n));
@@ -26,7 +28,9 @@ for L=[4:6]
 	m2 = momentos(7,1:30)';
 	m3 = momentos(8,1:30)';
 	m4 = momentos(9,1:30)';
-	clasificado = clasificador(m1,m2,m3,m4);
+
+
+	clasificado = clasificador(m1,m2,m3,m4, vocal);
 	
 	sprintf('Era: %d - Fue clasificado como: %d', digito, clasificado)
 	%subplot(2,1,1);
