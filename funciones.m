@@ -365,6 +365,7 @@ end
 
 function vocal = dame_la_vocal( signal,fs )
 	patron = load('media.txt');
+	[patron, factor] = normalizar(patron);
 	lsp_coef = [];
 	signal = signal(:,1); %no estereo
 
@@ -402,8 +403,18 @@ function vocal = dame_la_vocal( signal,fs )
 	result = [];
 	for K=[1:size(lsp_coef)(2)]
 		%result = [result, clasificar(lsp_coef(:,K), rango)];
-		result = [result, clasificar2(lsp_coef(:,K), patron)];
+		caracter = lsp_coef(:,K);
+		caracter = caracter ./ factor';
+		result = [result, clasificar2(caracter, patron)];
 	end
 
 	vocal = analizar(result);
+end
+
+function [mm, factor] = normalizar(m)
+	factor = max(m);
+	mm = zeros(size(m));
+	for K=1:size(m)(2)
+		mm(:,K) = m(:,K)/factor(K);
+	end
 end
