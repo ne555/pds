@@ -1,5 +1,4 @@
 source funciones.m;
-source ./mfcc/melfcc.m
 inicio = [14,12,12,12,13,20,12,12,20,7]'*1e3;
 
 vocales = [800 1600; 600 2500; 300 2500; 600 800; 300 800];

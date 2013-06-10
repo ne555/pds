@@ -1,7 +1,5 @@
 source funciones.m;
-source ./mfcc/melfcc.m
 
-rango = load('rango.txt');
 patron = load('media.txt');
 for digito=[0:9]
 for L=[7]
