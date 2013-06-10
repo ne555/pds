@@ -7,12 +7,11 @@ debe_dar = [vocales(4,:); vocales(1,:); vocales(2,:); vocales(3,:); vocales(4,:)
 
 
 
-for digito=[0,4,5]
+estadisticas = [];
+for digito=[1 2 3 4 6 7 8 9]
 	digito
-	for L=[1:6]
-	valores = [];
-	tracto = [];
 	lsp_coef = [];
+	for L=[1:6]
 		archivo = sprintf('./grabaciones/all/%d/%d.wav',digito,L);
 		[signal,fs,bps] = wavread(archivo);
 		signal = signal(:,1);
@@ -37,36 +36,31 @@ for digito=[0,4,5]
 				r = lsp2(a);
 				r2 =unique(abs(r))*fs/(2*pi);
 
-
-			%else
-			%	a = zeros(14,1);
-			%	r2 = zeros(16,1);
-
 				%si no tiene f0 no es vocal
 				if( r2(2) < 800 )
-					lsp_coef = [lsp_coef,r2];
+					lsp_coef = [lsp_coef,r2(2:5)];
 				end
 			end
-			%tracto = [tracto,a];
-			%valores = [valores;r2'];
 		end
 
 		%tomar la parte central
 		[rows,cols] = size(lsp_coef);
-		lsp_coef(:, 1:floor(cols/4)) = -100;
-		lsp_coef(:, cols-ceil(cols/4):cols) = -100;
-
-		clf;
-		subplot(2,1,2);
-		hold on;
-		for K=[2:4]
-			plot( lsp_coef(K,:), sprintf('-*%d',K-1) );
-		end
-		subplot(2,1,1);
-		plot(signal);
-
-		pause;
+		lsp_coef = lsp_coef(:, floor(cols/4):cols-ceil(cols/4));
 	end
+
+	%estadisticas
+	estadisticas = [estadisticas; mean( lsp_coef' ) std( lsp_coef' )];
+
+	%clf;
+	%subplot(2,1,2);
+	%hold on;
+	%for K=[2:4]
+	%	plot( lsp_coef(K,:), sprintf('-*%d',K-1) );
+	%end
+	%subplot(2,1,1);
+	%plot(signal);
+
+	%pause;
 end
 
 %df = fs/n;
