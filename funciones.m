@@ -341,3 +341,16 @@ function clase = clasificador(m1,m2,m3,m4)
 		end
 	end
 end
+
+function y = mapear(x, mapa)
+	y = zeros(size(x));
+	for K=[1:length(x)]
+		y(K) = mapa(x(K));
+	end
+end
+
+function vocal = analizar( x )
+	mapa = [1 1 2 2 3 3 4 4 4 5];
+	y = mapear(x,mapa);
+	vocal = mode(y);
+end

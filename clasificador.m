@@ -45,6 +45,8 @@ for L=[7]
 		result = [result, clasificar2(lsp_coef(:,K), patron)];
 	end
 
+	result = analizar(result);
+
 	digito
 	result
 end
