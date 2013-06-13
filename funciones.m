@@ -1,5 +1,12 @@
 1;
 
+source dp.m
+source dp2.m
+source dpfast.m
+source istft.m
+source pvsample.m
+source simmx.m
+
 function r = autocorrelacion(y)
 	r = zeros(size(y));
 	n = length(r);
@@ -250,14 +257,6 @@ function voc = clasificar(x, rango)
 	end
 end
 
-function voc = clasificar2(x, patron)
-	distancia = [];
-	for K=[1:size(patron)(1)]
-		distancia = [distancia;norm(x-patron(K,:)')];
-	end
-	[descartar,voc] = min(distancia);
-end
-
 function [frames2,t2] = cortar(signal)
 	%[signal,fs,bps] = wavread(archivo);
 	n = 1024;
@@ -298,26 +297,19 @@ function dif = diferencia(a, b)
 	dif = dif/n;
 end
 
+
 function dif = comparar(m1,m2,m3,m4, num)
-	archivo = sprintf('./%d/m1%d.txt',num,num);
-	c_m1 = load(archivo);
-	archivo = sprintf('./%d/m2%d.txt',num,num);
-	c_m2 = load(archivo);
-	archivo = sprintf('./%d/m3%d.txt',num,num);
-	c_m3 = load(archivo);
-	archivo = sprintf('./%d/m4%d.txt',num,num);
-	c_m4 = load(archivo);
-	dif_m1 = 0;
-	dif_m2 = 0;
-	dif_m3 = 0;
-	dif_m4 = 0;
-	for i = 1:4
-		dif_m1= dif_m1 + diferencia(c_m1(:,i), m1);
-		dif_m2= dif_m2 + diferencia(c_m2(:,i), m2);
-		dif_m3= dif_m3 + diferencia(c_m3(:,i), m3);
-		dif_m4= dif_m4 + diferencia(c_m4(:,i), m4);
+	m = [m1,m2,m3,m4]';
+	distancia = [];
+	for K=[1:5]
+		archivo = sprintf('./momentos/%d/%d.txt',num,K);
+		patron = load(archivo);
+		SM = simmx(m,patron');
+		[p,q,C] = dp(1-SM);
+		distancia = [distancia;C(size(C,1),size(C,2))];
 	end
-	dif = dif_m1 + dif_m2 + dif_m3 + dif_m4;
+	dif = min(distancia);
+	dif
 end
 
 function clase = clasificador(m1,m2,m3,m4, vocal)
@@ -328,18 +320,6 @@ function clase = clasificador(m1,m2,m3,m4, vocal)
 		parecidos( contra(vocal,K)+1 ) = comparar(m1,m2,m3,m4, contra(vocal,K) );
 	end
 	
-
-	
-	%parecidos(1) = comparar(m1,m2,m3,m4,0);
-	%parecidos(2) = comparar(m1,m2,m3,m4,1);
-	%parecidos(3) = comparar(m1,m2,m3,m4,2);
-	%parecidos(4) = comparar(m1,m2,m3,m4,3);
-	%parecidos(5) = comparar(m1,m2,m3,m4,4);
-	%parecidos(6) = comparar(m1,m2,m3,m4,5);
-	%parecidos(7) = comparar(m1,m2,m3,m4,6);
-	%parecidos(8) = comparar(m1,m2,m3,m4,7);
-	%parecidos(9) = comparar(m1,m2,m3,m4,8);
-	%parecidos(10) = comparar(m1,m2,m3,m4,9);
 	minimo = min(parecidos);
 	clase=11;
 	for i=1:10
@@ -349,6 +329,41 @@ function clase = clasificador(m1,m2,m3,m4, vocal)
 		end
 	end
 end
+
+
+function clasificado = clasificador_estadistico(signal, vocal, digito)
+	signal=cortar2(signal);	
+	%n = ceil(length(signal)/51);
+	n = 512;
+	momentos = [];
+	[frames,t] = ventaneo(signal, n, 2, hanning(n));
+	for K=[1:size(frames)(2)]
+		x = frames(:,K);
+		x = abs(fft(x));
+		e = statistics(x);
+		momentos = [momentos,e];
+	end
+	%m1 = momentos(6,1:100)';
+	%m2 = momentos(7,1:100)';
+	%m3 = momentos(8,1:100)';
+	%m4 = momentos(9,1:100)';
+
+	m = momentos(6:9,:)';
+
+	clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), vocal);
+		
+	sprintf('Era: %d - Fue clasificado como: %d', digito, clasificado)
+
+end
+
+function voc = clasificar2(x, patron)
+	distancia = [];
+	for K=[1:size(patron)(1)]
+		distancia = [distancia;norm(x-patron(K,:)')];
+	end
+	[descartar,voc] = min(distancia);
+end
+
 
 function y = mapear(x, mapa)
 	y = zeros(size(x));
@@ -408,7 +423,7 @@ function vocal = dame_la_vocal( signal,fs )
 		result = [result, clasificar2(caracter, patron)];
 	end
 
-	result
+	%result
 	vocal = analizar(result);
 end
 
