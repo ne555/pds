@@ -1,0 +1,136 @@
+﻿Estado del arte
+ 
+A partir de una búsqueda bibliográfica hemos encontrado que existen
+diversos métodos que se pueden utilizar para realizar un análisis de
+las señales de audio con el fin de extraer características de las mismas
+que puedan utilizarse para poder obtener sus representaciones escritas.
+
+Entre dichos métodos se destacan la utilización de coeficientes
+cepstrales [1], codificación predictiva lineal (LPC ) [2], perceptual
+linear predictive (PLP) [3], pares de líneas espectrales (LSP) [4][5],
+banco de filtros [6].
+
+
+Asimismo existen numerosas técnicas que permiten clasificar las señales
+mediante las características previamente obtenidas que incluyen desde
+cálculos de distancias entre la señal que se desea procesar y una base
+de datos de ejemplos a métodos de inteligencia computacional. Entre
+éstas podemos nombrar el cálculo de la distancia euclídea, Dinamic
+Time Warping [7],  cuantización vectorial [8], perceptrón multicapa
+[9], etcétera.
+
+
+
+
+
+
+\documentclass[a4paper]{article}
+
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+
+
+\title{Reconocimiento automático de dígitos en Lojban a partir de señal sonora}
+\author{Bedrij \and Goethe \and Gómez}
+\date{}
+%esto es un comentario
+
+
+\begin{document}
+    \maketitle
+    \section{Introducción}
+    Se pretende traducir un archivo de audio que números en Lojban a su representación escrita.
+    %justificación del lenguaje
+    Si bien no pueden aprovecharse el uso de la gramática no ambigua y libre de contexto
+    (que fue lo que impulsó la elección del idioma)
+    se aprecian algunas características que pueden facilitar la tarea, como ser
+    que los números están compuestos por concatenación de dígitos
+    que todos los dígitos son monosílabos compuestos por una consonante y vocal (en ese orden)
+    que se utiliza la misma vocal en a lo sumo tres dígitos,
+    que las consonantes que acompañan vocales repetidas son de sonidos muy diferentes
+
+
+    %lista de dígitos
+    0 no pa re ci(shi) vo
+    mu xa(ja) ze bi so 9
+
+
+    %Procesamiento
+    Se procesará cada dígito de forma aislada, suponiendo resuelto el problema de separar un número en sus dígitos.
+    La clasificación se logra mediante una comparación contra una base de datos buscándose el más parecido.
+    
+    Por motivos de costo computacional, y de robustez, no se utilizará la señal temporal de forma cruda sino que se extraerán características.
+    Además, considerando las diferencias de tiempo y velocidad de habla, se utilizará \emph{dynamic time warping} (DTW) como medida de distancia.
+
+
+    \section{Características}
+            Para distinguir los fonemas se analizará la respuesta en frecuencia de las vocales y consonantes.
+            Esta información se encontrará condensada en diversos parámetros
+            %lista
+                    - Momentos estadísticos (media, varianza, simetría, curtosis)
+                    - Coeficientes ceptrales (formantes 1 y 2)
+                    - Modelo AR equivalente. Representado mediante PLP o LSP
+
+
+            Estos parámetros serán calculados por ventanas temporales de $20ms$ a las que se ajustó mediante la escala de Mel.
+
+
+            El diccionario se constituirá por la concatenación de estas características a lo largo de la vocal y del fonema
+
+
+    \section{Clasificación}
+            Como se mencionó antes las vocales se encuentran distribuídas en los dígitos, no hallándose más de una por dígito
+            y no teniendo más de tres dígitos la misma vocal.
+
+
+            Esto sugiere que la identificación de la vocal podría reducir el problema considerablemente.
+            Problema un poco más sencillo, posible de resolverse simplemente mediante el cálculo de las primeras formantes.
+            Sin embargo surge el inconveniente de separar la vocal de la consonante.
+            Supondremos que el uso de una heurística para distinguir la porción de estacionariedad será suficiente. Otra opción puede ser utilizar la técnica de Cruce por cero y la energía [9].
+
+
+            Luego de identificar la vocal, se tendrán a lo sumo tres candidatos.
+            Se resolverá mediante el uso de DTW durante todo el fonema
+
+
+            
+        
+
+
+
+
+Bibliografía
+
+
+[1] ECUALIZACIÓN DE HISTOGRAMAS ADAPTATIVA EN EL DOMINIO
+CEPSTRAL PARA RECONOCIMIENTO DE VOZ ROBUSTO
+Carmen Benítez, Ángel de la Torre, José C. Segura, Javier Ramírez, Antonio J. Rubio.
+
+
+[2] FEATURE EXTRACTION FOR SPEECH RECOGNITON
+Manish P. Kesarkar.
+
+
+[3] PERCEPTUAL LINEAR PREDICTIVE (PLP) ANALYSIS OF SPEECH
+Hynek Hermansky
+
+
+[4] A REVIEW OF LINE SPECTRAL PAIRS
+Ian Vince McLoughlin
+
+
+[5] THE DISTANCE MEASURE FOR LINE SPECTRUM PAIRS
+APPLIED TO SPEECH RECOGNITION
+Fang Zheng, Zhanjiang Song, Ling Li, Wenjian Yu, Fengzhou Zheng, and Wenhu Wu
+
+
+[6] DIGITAL PROCESSING OF SPEECH SIGNALS
+Rabiner Schafer
+
+
+[7] DYNAMIC TIME WARPING ALGORITHM REVIEW. Pavel Senin
+
+
+[8] FUNDAMENTALS OF SPEECH RECOGNITION. Lawrence Rabiner, Biing-Hwang Juang
+[9] CONTINUOUS SPEECH RECOGNITION USING PLP ANALYSIS WITH MULTILAYER PERCEPTRONS. Morgan, N.; Hermansky, H.; Bourlard, H.; Kohn, P.; Wooters, C.
