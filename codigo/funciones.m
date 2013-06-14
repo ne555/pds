@@ -218,7 +218,14 @@ end
 
 function raiz = lsp2(ar)
 	[P,Q] = lsp(ar);
-	raiz = [angle(roots(P));angle(roots(Q))];
+	raiz = [roots(P);roots(Q)];
+	%despreciar los conjugados
+	[s,index] = sort(angle(raiz));
+	index = index(15:30);
+
+	%considerar solo los angulos
+	%el modulo es 1
+	raiz = angle(raiz(index));
 end
 
 
@@ -373,43 +380,22 @@ function y = mapear(x, mapa)
 end
 
 function vocal = analizar( x )
-	mapa = [1 1 2 2 3 3 4 4 4 5 5];
+	%mapa = [1 1 2 2 3 3 4 4 4 5 5];
+	mapa =  [4 1 2 3 4 5 1 2 3 4];
 	y = mapear(x,mapa);
 	vocal = mode(y);
 end
 
-function vocal = dame_la_vocal( signal,fs )
-	patron = load('media.txt');
+function vocal = dame_la_vocal( signal,fs,cant )
+	patron = load('../base_datos/lsp.txt');
 	[patron, factor] = normalizar(patron);
 	lsp_coef = [];
 	signal = signal(:,1); %no estereo
 
 	umbral = 0.5*dot(signal,signal)/length(signal);
-
 	n = 1024;
 	[frames,t] = ventaneo(signal, n, 2, hanning(n));
-
-	for K=[1:size(frames)(2)]
-		x = frames(:,K);
-		energia = dot(x,x)/(n*0.374); %compensar el ventaneo
-
-		%eliminar las ventanas de silencio
-		if energia>umbral
-			%prediccion lineal
-			[a,err] = prediccion_lineal(x,14);
-			orden = 14;
-			a = a(:,orden);
-
-			%por supuesto la culpa es de tu lsp
-			r = lsp2(a);
-			r2 =unique(abs(r))*fs/(2*pi);
-
-			%si no tiene f0 no es vocal
-			if( r2(2) < 800 )
-				lsp_coef = [lsp_coef,r2(2:5)];
-			end
-		end
-	end
+	lsp_coef = caracteristicas_vocal(frames, fs, umbral, cant);
 
 	%tomar la parte central
 	[rows,cols] = size(lsp_coef);
@@ -423,7 +409,6 @@ function vocal = dame_la_vocal( signal,fs )
 		result = [result, clasificar2(caracter, patron)];
 	end
 
-	%result
 	vocal = analizar(result);
 end
 
@@ -433,4 +418,58 @@ function [mm, factor] = normalizar(m)
 	for K=1:size(m)(2)
 		mm(:,K) = m(:,K)/factor(K);
 	end
+end
+
+
+function lsp_coef = caracteristicas_vocal(frames, fs, umbral, cant)
+	lsp_coef = [];
+	n = size(frames)(1);
+	for K=[1:size(frames)(2)]
+		x = frames(:,K);
+		energia = dot(x,x)/(n*0.374); %compensar el ventaneo
+
+		%eliminar las ventanas de silencio
+		if energia>umbral
+			%prediccion lineal
+			[a,err] = prediccion_lineal(x,14);
+			orden = 14;
+			a = a(:,orden);
+
+			%por supuesto la culpa es de tu lsp
+			r = lsp2(a);
+			r2 = r(2:cant+1)*fs/(2*pi);
+			f0 = r(1);
+
+			%si no tiene f0 no es vocal
+			%if( r2(2) < 800 )
+			if( f0 < 800 )
+				lsp_coef = [lsp_coef,r2];
+			end
+		end
+	end
+end
+
+function [senal, fs] = extraer_senal(path, digito, n)
+	pattern = cat(2, path, '%d/%d.wav'); 
+	archivo = sprintf(pattern ,digito,n);
+	[senal,fs,bps] = wavread(archivo);
+	senal = senal(:,1);
+end
+
+function m = promedio_ponderado(senal)
+	[rows,cols] = size(senal);
+	senal = senal(:, floor(cols/4):cols-ceil(cols/4));
+
+	m = zeros(1, size(senal)(1));
+	n = size(senal)(2);
+
+	%recta
+	factor = linspace(0.5, 1.5, n);
+	for K=[1:length(m)]
+		for L=[1:n]
+			m(K) += factor(L)*senal(K,L);
+		end
+	end
+	m /= sum(factor);
+
 end
