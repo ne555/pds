@@ -437,7 +437,8 @@ function lsp_coef = caracteristicas_vocal(frames, fs, umbral, cant)
 
 			%por supuesto la culpa es de tu lsp
 			r = lsp2(a);
-			r2 = r(2:cant+1)*fs/(2*pi);
+			%r2 = r(2:cant+1)*fs/(2*pi);
+			r2 = r(3:cant+2)*fs/(2*pi);
 			f0 = r(1);
 
 			%si no tiene f0 no es vocal
@@ -472,4 +473,18 @@ function m = promedio_ponderado(senal)
 	end
 	m /= sum(factor);
 
+end
+
+function y = agregar_ruido(x, snr)
+	n = length(x);
+	ps = dot(x,x)/n;
+	ruido = rand(size(x))-0.5;
+	%normalizar el ruido
+	pr = dot(ruido,ruido)/n;
+	ruido /= sqrt(pr);
+	%ajustar el ruido a snr
+	pr = ps/ 10**(snr/10);
+
+	ruido *= sqrt(pr);
+	y = x+ruido;
 end

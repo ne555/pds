@@ -2,13 +2,11 @@
 function crear_base_lsp(cant)
 	source funciones.m;
 	caracteristicas = [];
-	%for digito=[0:9]
-	for digito=[4]
+	for digito=[0:9]
 		lsp_coef = [];
-		for L=[1:10]
-			%[signal, fs] = extraer_senal('../grabaciones/prueba/', digito, L);
-			%[signal, fs] = extraer_senal('../otro/', digito, 10*L+digito+1);
-			[signal, fs] = extraer_senal('../grabaciones/vocal/', digito, L);
+		for L=[0:4]
+			%[signal, fs] = extraer_senal('../grabaciones/entrenamiento/', digito, L);
+			[signal, fs] = extraer_senal('../otro/', digito, 10*L+digito+1);
 
 			umbral = 0.5*dot(signal,signal)/length(signal);
 
@@ -21,5 +19,5 @@ function crear_base_lsp(cant)
 		caracteristicas = [caracteristicas; mean(lsp_coef)];
 	end
 
-	save('-ascii', '../base_datos/o.txt', 'caracteristicas');
+	save('-ascii', '../base_datos/lsp.txt', 'caracteristicas');
 end
