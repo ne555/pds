@@ -105,11 +105,13 @@
 
 		De las $20$ realizaciones, $10$ fueron destinadas a prueba y $10$ a entrenamiento.
 
-	\subsection{Separación temporal}
-		Los bloques de identificación de 
-		
 
 	\subsection{Identificación de la vocal}
+		La señal se dividerá en ventanas de $\approx 20ms$, considerándose vocal si 
+		su energía supera un umbral. 
+		Además se observó que el $lsp(2)$ puede ser usado para discernir sonidos sordos (valores altos) 
+		de sonoros
+
 		Como característica clasificadora se utilizarán los \emph{line spectral pairs} (LSP).
 		Los LSP son una representación artificial de la respuesta del tracto vocal $H(z)$,
 		usando como base los coeficientes del sistema AR equivalente
@@ -131,7 +133,7 @@
 			}
 			\label{fig:tracto}
 		\end{figure}
-		
+
 		\subsubsection{Generación de los patrones}
 		Los patrones se crean mediante un promedio ponderado de los LSP
 		a lo largo del tiempo, asignándole menor peso a las primeras muestras
@@ -152,9 +154,8 @@
 		El ganador se decide por votación.
 
 
-		Para considerar sólo la porción estable de la señal,
-		se considera un umbral de energía y la detección del pitch.
-		Luego se descartan las primeras y últimas ventanas (un cuarto del total).
+		Para considerar solamente la porción estable de la vocal,
+		del total de ventanas se descartan el primer y último cuarto
 		%el método presenta problemas en 'no' 'vo' 'mu'
 
 
@@ -217,8 +218,8 @@
 		anterior ahora realizamos la evaluación para la consonante en los $5$
 		patrones de cada uno de los dígitos que comparten la vocal obtenida por
 		lo que en vez de tener que hacer $50$ evaluaciones, hacemos $10$ para los
-		dígitos cuyas vocales son a, e, i; $15$ para 0 y en el caso del dígito
-		cuya vocal es u ya queda determinado porque es el único que contiene
+		dígitos cuyas vocales son `a', `e', `i'; $15$ para `o' y en el caso del dígito
+		cuya vocal es `u' ya queda determinado porque es el único que contiene
 		dicha vocal.
 
 
@@ -282,43 +283,35 @@
 	\end{table}
 	
 %ejemplo
-\section{Conclusiones}
+%\section{Conclusiones}
+\section{Resultados}
 
-	En las conclusiones debería presentarse una revisión de los puntos
-	clave del artículo con especial énfasis en el análisis y discusión
-	de los resultados que se realizó en las secciones anteriores y en las
-	aplicaciones o ampliaciones de éstos. No debería reproducirse el resumen
-	en esta sección.
+Sometimos el algoritmo propuesto a las mismas señales de prueba pero
+agregándoles distintos niveles de ruido obteniéndose las matrices de
+confusión que se muestran en las tablas ….
 
-	Incluya en esta sección y en la sección de discusión sus propias críticas
-	y conclusiones sobre el trabajo.
+En la prueba de SNR > 40 db, el algoritmo tuvo muy buenos resultados
+para las señales de prueba a las que lo sometimos, obteniéndose
+problemas para identificar los dígitos 2, 3, 4 y 6. En los primeros tres
+dígitos se obtuvieron errores tanto en la detección de la vocal como
+de la consonante a diferencia del caso del dígito 6 que solo falló
+en la consonante. Creemos que el problema, en este caso, estuvo en la
+pronunciación en las grabaciones correspondientes ya que escuchándolas
+no se apreciaba el sonido de la J.
 
-	Si se trata de un análisis crítico de una publicación científica, no
-	olvide citar el artículo original en el que se baso tu trabajo.
+Dado que al aumentar el nivel de ruido la detección de la vocal
+comete muchos errores, decidimos evaluar la detección de la consonante
+proveyendo la vocal correspondiente en los casos de prueba. Los resultados
+obtenidos fueron buenos con una SNR de 20 db, obteniéndose mayores
+problemas al diferenciar  el dígito 4 (Vo) y el 8 (Bi). En el segundo
+caso el problema se debe a que el sonido de la consonante del dígito
+3 suele aproximarse al sonido del ruido blanco.
 
-\section{Apéndices}
+\section{Conclusión}
 
-	En algunas situaciones conviene incluir una sección de apéndices con
-	sus correspondientes subsecciones.
+Si bien los primeros resultados de la clasificación eran excelentes,
+la identificación de la vocal no es robusta respecto al ruido.
 
-	\subsection{Demostraciones}
-
-		Cuando la extensión y complejidad de las demostraciones lo justifique
-		en pos de no distraer al lector presentando en el texto solamente los
-		resultados finales.
-
-	\subsection{Algoritmos}
-
-		Cuando sus extensiones lo justifiquen y no sean parte central del trabajo.
-
-	\subsection{Detalles técnicos}
-
-		Tablas con datos técnicos o mediciones accesorias que se utilizaron en
-		el trabajo.
-
-\section*{Agradecimientos}
-
-	Si los hubiere, a quienes corresponda.
 
 \nocite{*} \bibliographystyle{tfmpd} \bibliography{tfmpd}
 
