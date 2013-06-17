@@ -88,8 +88,8 @@
    	 \end{enumerate}
 	 %diagrama en bloques
 	 \begin{figure}
-		\resizebox{0.4\textwidth}{!}{
-			\input{diagrama_en_bloque}
+		\resizebox{0.5\textwidth}{!}{
+			\input{diagrama}
 		}
 		\caption{Diagrama en bloques}
 	 \end{figure}
@@ -284,7 +284,6 @@
 	
 %ejemplo
 %\section{Conclusiones}
-\section{Resultados}
 
 Sometimos el algoritmo propuesto a las mismas señales de prueba pero
 agregándoles distintos niveles de ruido obteniéndose las matrices de
@@ -311,6 +310,16 @@ caso el problema se debe a que el sonido de la consonante del dígito
 
 Si bien los primeros resultados de la clasificación eran excelentes,
 la identificación de la vocal no es robusta respecto al ruido.
+Esto se debió a que no siempre fue posible detectar todas las formantes,
+en cuyo caso el algoritmo reemplazaba las formantes faltantes por formantes de orden superior.
+Comparar estos vectores con la distancia euclídea es un error, ya que corresponden a características
+distintas.
+
+La clasificación de las consonantes se comportó mejor, siempre y cuando supiera la vocal correctamente.
+Sin embargo, el bajo contenido energético de algunas consonantes limita la $SNR$ soportable
+
+
+
 
 
 \nocite{*} \bibliographystyle{tfmpd} \bibliography{tfmpd}
