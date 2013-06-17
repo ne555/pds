@@ -222,6 +222,11 @@
 		cuya vocal es `u' ya queda determinado porque es el único que contiene
 		dicha vocal.
 
+		Dado que las medidas estadísticas utilizadas son de distinto
+		orden, realizamos una normalización tanto en los patrones como
+		en la señal a analizar, según la norma infinito de cada una
+		de las medidas
+
 
 \section{Resultados}
 	\begin{table}
@@ -304,7 +309,7 @@ no se apreciaba el sonido de la `J'.
 Dado que al aumentar el nivel de ruido la detección de la vocal
 comete muchos errores, decidimos evaluar la detección de la consonante
 proveyendo la vocal correspondiente en los casos de prueba. Los resultados
-obtenidos fueron buenos con una $SNR de 20 dB$ (tabla~\ref{consonante}), obteniéndose mayores
+obtenidos fueron buenos con una $SNR$ de $20 dB$ (tabla~\ref{consonante}), obteniéndose mayores
 problemas al diferenciar  el dígito $4$ (Vo) y el $8$ (Bi). En el segundo
 caso el problema se debe a que el sonido de la consonante del dígito
 $3$ suele aproximarse al sonido del ruido blanco.
@@ -325,6 +330,6 @@ Sin embargo, el bajo contenido energético de algunas consonantes limita la $SNR
 
 
 
-\nocite{*} \bibliographystyle{tfmpd} \bibliography{tfmpd}
+\nocite{*} \bibliographystyle{tfmpd} \bibliography{informe}
 
 \end{document}
