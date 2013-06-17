@@ -241,6 +241,7 @@
 	\]
 		\caption{Matriz de confusión para una $SNR > 40dB$.\\
 		Porcentaje de aciertos de $90\%$}
+		\label{infty}
 	\end{table}
 
 	\begin{table}
@@ -260,6 +261,7 @@
 	\]
 		\caption{Matriz de confusión para una $SNR=30dB$. \\
 		El porcentaje de aciertos es paupérrimo $24\%$}
+		\label{treinta}
 	\end{table}
 
 	\begin{table}
@@ -280,6 +282,7 @@
 		\caption{Evaluación de la clasificación de la consonante. \\
 		Matriz de confusión para una $SNR=20dB$ \\
 		Porcentaje de aciertos de $84\%$}
+		\label{consonante}
 	\end{table}
 	
 %ejemplo
@@ -287,24 +290,24 @@
 
 Sometimos el algoritmo propuesto a las mismas señales de prueba pero
 agregándoles distintos niveles de ruido obteniéndose las matrices de
-confusión que se muestran en las tablas ….
+confusión que se muestran en las tablas \ref{infty} y \ref{treinta}
 
-En la prueba de SNR > 40 db, el algoritmo tuvo muy buenos resultados
+En la prueba de $SNR > 40 dB$, el algoritmo tuvo muy buenos resultados
 para las señales de prueba a las que lo sometimos, obteniéndose
-problemas para identificar los dígitos 2, 3, 4 y 6. En los primeros tres
+problemas para identificar los dígitos $2$, $3$, $4$, y $6$. En los primeros tres
 dígitos se obtuvieron errores tanto en la detección de la vocal como
-de la consonante a diferencia del caso del dígito 6 que solo falló
+de la consonante a diferencia del caso del dígito $6$ que solo falló
 en la consonante. Creemos que el problema, en este caso, estuvo en la
 pronunciación en las grabaciones correspondientes ya que escuchándolas
-no se apreciaba el sonido de la J.
+no se apreciaba el sonido de la `J'.
 
 Dado que al aumentar el nivel de ruido la detección de la vocal
 comete muchos errores, decidimos evaluar la detección de la consonante
 proveyendo la vocal correspondiente en los casos de prueba. Los resultados
-obtenidos fueron buenos con una SNR de 20 db, obteniéndose mayores
-problemas al diferenciar  el dígito 4 (Vo) y el 8 (Bi). En el segundo
+obtenidos fueron buenos con una $SNR de 20 dB$ (tabla~\ref{consonante}), obteniéndose mayores
+problemas al diferenciar  el dígito $4$ (Vo) y el $8$ (Bi). En el segundo
 caso el problema se debe a que el sonido de la consonante del dígito
-3 suele aproximarse al sonido del ruido blanco.
+$3$ suele aproximarse al sonido del ruido blanco.
 
 \section{Conclusión}
 
