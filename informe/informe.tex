@@ -120,7 +120,7 @@
 			P(z) &=& A(z) + z^{-(p+1)}A(z^{-1}) \\
 			Q(z) &=& A(z) - z^{-(p+1)}A(z^{-1})
 		\end{eqnarray*}
-		siendo los LSP las raíces de los polinomios $P$ y $Q$
+		siendo los LSP las raíces de los polinomios $P$ y $Q$ \cite{McLoughlin}
 
 		De los LSP nos interesa simplemente el ángulo, 
 		ya que se relaciona con la frecuencia de las formantes 
@@ -169,7 +169,7 @@
 		La base de datos para detectar la consonante está constituida por una
 		matriz por cada una de las señales utilizadas como patrón las cuales
 		contienen características estadísticas del espectro de frecuencia en
-		ventanas tomadas a lo largo del tiempo de la señal.
+		ventanas tomadas a lo largo del tiempo de la señal %\cite{Kesarkar}
 
 		Para la  generación de cada matriz realizamos un ventaneo, mediante
 		ventanas de Hanning de tamaño fijo (aproximadamente $10 ms$) a lo largo
@@ -206,7 +206,7 @@
 		queremos identificar consiste en primer lugar en obtener la matriz con
 		las medidas estadísticas del espectro de frecuencia de la misma forma
 		que generamos las matrices de las señales patrones. En segundo lugar
-		aplicamos el algoritmo Dynamic Time Warping  para lograr que la matriz
+		aplicamos el algoritmo Dynamic Time Warping \cite{Senin} para lograr que la matriz
 		obtenida de esta señal y cada una de las de la base de datos tengan la
 		misma dimensión  y utilizamos el costo que obtuvo este algoritmo para
 		identificar la consonante de la señal analizada.
