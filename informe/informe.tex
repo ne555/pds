@@ -1,325 +1,309 @@
 \documentclass[conference,a4paper,10pt,oneside,final]{tfmpd}
-\usepackage[utf8]{inputenc}   % caracteres especiales (acentos, eñes)
-\usepackage[spanish]{babel}     % varias definiciones para el español
-\usepackage{graphicx}           % inserción de graficos
+\usepackage[utf8]{inputenc}   % caracteres especiales (acentos, eÃ±es)
+\usepackage[spanish]{babel}     % varias definiciones para el espaÃ±ol
+\usepackage{graphicx}           % inserciÃ³n de graficos
+\usepackage{tikz}
+
+\usepackage{gnuplot-lua-tikz}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
 
 \begin{document}
-
-\title{Reconocimiento automático de dígitos en Lojban a partir de señal sonora}
+\title{Reconocimiento automÃ¡tico de dÃ­gitos en Lojban a partir de seÃ±al sonora}
 
 \author{Walter O. Bedrij,
         Marcelo Goette y 
-        Virginia M. Gómez \\
-\textit{Trabajo práctico final de ``Muestreo y procesamiento digital'', II-FICH-UNL.}}
+        Virginia M. GÃ³mez \\
+\textit{Trabajo prÃ¡ctico final de ``Muestreo y procesamiento digital'', II-FICH-UNL.}}
 
 \markboth{MUESTREO Y PROCESAMIENTO DIGITAL: TRABAJO FINAL}{}
 
-\maketitle
 
+\maketitle
 \begin{abstract}
-Este documento es una guía para la preparación de artículos a ser
-presentados en la simulación de Congreso, como trabajo final de
-la materia. Se recomienda que este resumen contenga entre 150 y 200
-palabras. Brevemente resuma el contexto y motivación, el o los aportes
-más originales, los resultados y las conclusiones de su trabajo. No haga
-citas bibliográficas y preferentemente tampoco introduzca acrónimos ni
-fórmulas en el resumen o en el título. Considere que este mismo resumen
-deberá ser presentado en formato de texto puro para su inclusión en las
-memorias del congreso. Como recomendación general, escriba su artículo
-insertando y eliminado texto a partir de este documento. De esta forma
-le será más fácil respetar los estilos predefinidos. No defina nuevos
-estilos y cuando pegue texto de otros documentos hágalo utilizando el
-pegado especial ``texto sin formato'' y asegurándose de aplicar luego
-el estilo correspondiente. Utilice las separaciones de texto tal como
-están definidas en cada estilo.
+	Uno de los futuros objetivos del lenguaje lojban es mejorar la
+	comunicaciÃ³n humano--computadora.  El presente trabajo aborda
+	la traducciÃ³n de archivos de audio a su representaciÃ³n escrita
+	para luego ser interpretados por una computadora, acotado al
+	reconocimiento de nÃºmeros.
+
+
+	Se dividirÃ¡ el problema de identificaciÃ³n en 2 partes para
+	distinguir cada fonema.  Primeramente, identificaremos la vocal
+	del este de cada nÃºmero utilizando line spectral pairs (LSP).
+	Luego de identificar las vocales solo quedarÃ­a determinar la
+	consonante para saber el fonema. 
+	Esto se harÃ¡ mediante el calculo de los momentos estadÃ­sticos en el espectro,
+	como son de longitud variable aplicamos el algoritmo dynamic time warping (DTW)
+	utilizando su costo como medida de distancia.
+
+
+	Si bien los resultados de clasificaciÃ³n fueron aceptables,
+	el mÃ©todo resulta muy vulnerable al ruido
+
 \end{abstract}
 
-\begin{keywords}
-entre 3 y 5 términos separados por coma. Elija aquellos que considere
-claves para identificar la temática de su trabajo y no repitan todo
-el título.
-\end{keywords}
 
-\section{Introducción}
+\section{IntroducciÃ³n}
+	El objetivo del trabajo es realizar un algoritmo que permita la identificaciÃ³n de dÃ­gitos
+	en un archivo de audio.
 
-	\PARstart{E}{l} formato sobre el que se basó este documento es
-	el utilizado por el IEEE para la mayoría de sus publicaciones y
-	conferencias. Sin embargo, se han realizado algunos pequeños cambios,
-	como por ejemplo, en el presente estilo se utiliza formato A4 en lugar
-	de carta y los márgenes se han fijado en 2 cm a la izquierda y arriba,
-	y 1,5 cm a la derecha y abajo. A partir de estas definiciones se ha
-	fijado el ancho de columna en 8,5 cm, con un espacio de 0,5 cm entre
-	ellas. Se ha dejado un encabezado de página indicando el código del
-	artículo y el número de página y ningún tipo de pié de página. Para
-	los usuarios de \LaTeX\ se recomienda utilizar el formato tfmpd.cls,
-	que es una adaptación al español del formato IEEETran.cls.
+	No se contempla concatenaciones u otros sonidos que no sean los correspondientes a los dÃ­gitos
 
-	Las definiciones elementales de estilo son: fuente Times o Times
-	New Roman para todas las partes del documento, tamaño 24 pt para el
-	título, 11 pt para los datos de los autores, cursiva para la línea de la
-	institución a la que pertenece el primer autor y su correo electrónico,
-	9 pt en negritas para el resumen y palabras clave, 10 pt para el
-	texto normal, ecuaciones y títulos de sección, versales y centrado
-	para el título de nivel 1, itálica para los títulos de nivel 2 y 3,
-	8 pt para los epígrafes de las figuras, tablas y referencias, versales
-	para el epígrafe de tablas. Utilice cursivas para destacar un término
-	(no subrayado). A pesar de todos estos detalles y cuantos otros que se
-	podrían dar, se recomienda nuevamente escribir su artículo copiando,
-	pegando y reemplazando texto a partir de este mismo documento. Esta es
-	la forma más fácil y segura de respetar los estilos definidos.
+	Si bien no pueden aprovecharse el uso de la gramÃ¡tica
+	no ambigua y libre de contexto (que fue lo que impulsÃ³ la
+	elecciÃ³n del idioma) se aprecian algunas caracterÃ­sticas que
+	pueden facilitar la tarea, como ser
+	\begin{itemize}\itemsep0pt
+	\item los nÃºmeros estÃ¡n compuestos por concatenaciÃ³n de dÃ­gitos
+	\item todos los dÃ­gitos son monosÃ­labos compuestos por una consonante y vocal
+		(en ese orden)
+	\item se utiliza la misma vocal en a lo sumo tres dÃ­gitos,
+	\item las consonantes que acompaÃ±an vocales repetidas son de sonidos muy diferentes
+	\end{itemize}
 
-	La extensión de cada trabajo no podrá exceder \textit{estrictamente}
-	las 4 páginas y se recomienda que tampoco posea menos de 3 páginas. Por
-	favor, no cambie la tipografía, ni los espacios entre el texto, ni
-	otras medidas definidas en los estilos para ajustarse a esta norma. En
-	esta oportunidad se solicita a los autores que para la revisión inicial
-	presente el trabajo completo (3 o 4 páginas) en el formato final pero
-	sin los datos de autor y por separado un archivo de texto con el título,
-	los datos de los autores, el resumen y las palabras clave.
+	En la Tabla~\ref{tab:digitos} puede verse la correspondencia entre los dÃ­gitos decimales
+	y su representaciÃ³n en Lojban. La pronunciaciÃ³n es igual al espaÃ±ol
+	con excepciÃ³n de los nÃºmeros $3$ y $6$ que se pronuncian como indica
+	entre parÃ©ntesis.
 
-	La estructura general que se espera para este artículo abarca generalmente
-	secciones como: introducción, materiales, métodos, resultados, discusión,
-	conclusiones, trabajos futuros, agradecimientos y referencias. Estos
-	títulos pueden combinarse de a dos en una misma sección y los títulos
-	trabajos futuros y agradecimientos son totalmente optativos. Es común
-	que la sección de métodos lleve otro título más relacionado con el aporte
-	original del artículo, pero las restantes secciones se presentan con los
-	títulos antes listados. Si existieran demostraciones u otros desarrollos
-	matemáticos extensos, se recomienda agruparlos en apéndices antes de
-	las referencias bibliográficas.
+	%lista de dÃ­gitos
+	\begin{table}[h]
+		\center
+		\begin{tabular}{lllll}
+			$0$ no & $1$ pa & $2$ re & $3$ ci(shi) & $4$ vo\\
+			$5$ mu & $6$ xa(ja) & $7$ ze & $8$ bi & $9$ so\\
+		\end{tabular}
+		\caption{DÃ­gitos en lojban}
+		\label{tab:digitos}
+	\end{table}
 
-	A continuación se darán más detalles acerca de las secciones del
-	documento y los formatos para insertar los distintos tipos de objetos,
-	como ecuaciones, figuras, etc.
 
-\section{Formato para los objetos insertados}
+   	 El procesamiento es como sigue:
+   	 \begin{enumerate}
+   		 \item EliminaciÃ³n del silencio
+   		 \item SeparaciÃ³n de las partes correspondientes a `vocal' y `consonante'
+   		 \item IdentificaciÃ³n de vocal
+   		 \item IdentificaciÃ³n de la consonante, teniendo en cuenta la vocal
+   	 \end{enumerate}
+	 %diagrama en bloques
+	 \begin{figure}
+		\resizebox{0.4\textwidth}{!}{
+			\input{diagrama_en_bloque}
+		}
+		\caption{Diagrama en bloques}
+	 \end{figure}
+	
 
-	Observe que el título de cada sección ya incluye la numeración automática
-	y el espacio hacia el último párrafo de la sección anterior. Por lo tanto,
-	para iniciar una nueva sección se recomienda comenzar copiando y pegando
-	el título desde otra sección en este mismo documento. De forma similar,
-	también se puede observar que el formato para los párrafos ya incluye
-	una pequeña indentación automática en la primera línea y no existe un
-	espacio extra para la separación entre párrafos.
+\section{Materiales y mÃ©todos}
+	\subsection{Base de datos}
+		Los archivos de audio fueron generados por una sola persona que recitÃ³ los dÃ­gitos en orden.
+		Se realizaron $20$ grabaciones, dejando un tiempo prudencial entre cada dÃ­gito.
 
-	\subsection{Las ecuaciones}
-		Las ecuaciones menores o definiciones de variables pueden insertarse
-		directamente en la línea del párrafo, por ejemplo, considérese que se
-		desea definir una historia ${\rm {\bf h}}_i^n = w_{i - 1} ,w_{i - 2},
-		\ldots,w_{i - n + 1} $ asociada un símbolo $w_i $. Observe que una manera
-		sencilla de asegurar la uniformidad en el estilo de las ecuaciones es
-		insertar siempre una ecuación aún cuando se podría escribir directamente
-		como texto y aplicar formato en cursiva o negrita.
+		Los dÃ­gitos se separaron considerando una caÃ­da de $26dB$ en la amplitud, durante al menos
+		$0.5s$ como silencio. Cada dÃ­gito se dejÃ³ con $100ms$ al inicio y al final de `silencio'
 
-		Para insertar ecuaciones más complejas se recomienda utilizar un formato
-		de párrafo aparte, con el estilo correspondiente:
+		De las $20$ realizaciones, $10$ fueron destinadas a prueba y $10$ a entrenamiento.
 
-		\begin{equation} \label{eq1} \hat {P}_I (w_i \vert {\rm {\bf h}}_i^k ) =
-		\sum\limits_{j=0}^{k-1} {\lambda _j \hat {P}(w_i \vert {\rm {\bf h}}_i^j
-		)} \end{equation}
+	\subsection{SeparaciÃ³n temporal}
+		Los bloques de identificaciÃ³n de 
+		
 
-		En este estilo de ecuación se ha fijado dos tabulaciones, la primera
-		centra la ecuación en la columna y la segunda justifica a la derecha el
-		número de la ecuación. Para hacer referencia a esta ecuación desde el
-		texto se menciona, por ejemplo, en (\ref{eq1}) se puede ver la estimación
-		de la probabilidad de una historia a partir de la simple combinación
-		lineal de historias de orden inferior.
+	\subsection{IdentificaciÃ³n de la vocal}
+		Como caracterÃ­stica clasificadora se utilizarÃ¡n los \emph{line spectral pairs} (LSP).
+		Los LSP son una representaciÃ³n artificial de la respuesta del tracto vocal $H(z)$,
+		usando como base los coeficientes del sistema AR equivalente
+		\begin{eqnarray*}
+			A(z) &=& 1/H(z) \\
+			P(z) &=& A(z) + z^{-(p+1)}A(z^{-1}) \\
+			Q(z) &=& A(z) - z^{-(p+1)}A(z^{-1})
+		\end{eqnarray*}
+		siendo los LSP las raÃ­ces de los polinomios $P$ y $Q$
 
-	\subsection{Las figuras}
+		De los LSP nos interesa simplemente el Ã¡ngulo, 
+		ya que se relaciona con la frecuencia de las formantes 
+		(como se observa en la fig~\ref{fig:tracto}).
+		\begin{figure}
+			\includegraphics[width=0.5\textwidth]{imagen/3.png}
+			\caption{
+				Respuesta al tracto vocal de `ci' (porciÃ³n central de la vocal)
+				Se observa como las raÃ­ces de $P(z)$ y $Q(z)$ representan cercanamente a las formantes
+			}
+			\label{fig:tracto}
+		\end{figure}
+		
+		\subsubsection{GeneraciÃ³n de los patrones}
+		Los patrones se crean mediante un promedio ponderado de los LSP
+		a lo largo del tiempo, asignÃ¡ndole menor peso a las primeras muestras
+		con el fin de evitar perturbaciones producidas por la consonante.
+		Luego, se promedian todas las realizaciones de las muestras de entrenamiento.
 
-		Cuando inserte figuras no las deje como objetos flotantes sobre el texto
-		y no incluya dentro de ellas al epígrafe. El epígrafe se coloca abajo de
-		las figuras y posee un estilo propio que básicamente consiste en fuente
-		de 8 pt con párrafo justificado cuando se trate de más de una línea y
-		centrado para una única línea de texto (ver Fig. 1). Si en la figura
-		utiliza ejes cartesianos, recuerde siempre indicar en la misma a que
-		corresponde cada eje (etiquetas). Para hacer referencia a una figura se
-		debe utilizar la forma abreviada Fig. seguida del número de la figura,
-		salvo cuando esté al comienzo del párrafo, caso en que se deberá utilizar
-		la palabra completa.
+		No se utilizan todos los coeficientes,
+		ya que engloban mÃ¡s informaciÃ³n de la necesaria.
+		Empiricamente se determinÃ³ que se obtienen mejores resultados 
+		al usar los coeficientes $3$ al $10$
 
-		En la Fig. 2 se puede ver otro tipo de figura donde se destacan cuatro
-		curvas. No incluya colores en las gráficas, preferentemente utilice
-		distintos tipos de líneas. Los gráficos vectorizados brindan una mejor
-		calidad electrónica y de impresión. Por lo tanto, inserte todas las
-		gráficas con algún formato vectorizado (Corel, Visio, XFig, PostScript,
-		Metarchivo mejorado, etc) o bien, si se tratase de una fotografía o imagen
-		más compleja utilice formatos raster sin compresión (por ejemplo BMP)
-		o con compresión sin pérdida de información (se pueden configurar los
-		formatos JPG, PNG, TIF, GIF, etc).
+		Para dar igual importancia a cada coeficiente, se los dividirÃ¡ por la norma infinito
+		a lo largo de los dÃ­gitos.
+			
+		\subsubsection{ClasificaciÃ³n}
+		Para identificar la vocal, se divide en ventanas de $\approx 20ms$ y se comparan los
+		LSP de cada ventana contra el de los patrones.
+		El ganador se decide por votaciÃ³n.
 
-		En general, se recomienda que las figuras estén al principio o al pie
-		de una columna. Se debe cuidar que el tamaño del texto dentro de las
-		figuras no sea menor a 7 pt.
 
-	\subsection{Las tablas}
+		Para considerar sÃ³lo la porciÃ³n estable de la seÃ±al,
+		se considera un umbral de energÃ­a y la detecciÃ³n del pitch.
+		Luego se descartan las primeras y Ãºltimas ventanas (un cuarto del total).
+		%el mÃ©todo presenta problemas en 'no' 'vo' 'mu'
 
-		Es preferible que las tablas se diseñen a partir del mismo editor de
-		textos pero también pueden consistir en una gráfica en algún formato
-		vectorizado. El epígrafe de las tablas es marcadamente diferente del de
-		las figuras: se coloca por arriba de la tabla, con fuente de tamaño 8
-		pt en versales y párrafo centrado.
 
-		\begin{figure}[tbhp] \centerline{\includegraphics{sgram}} \caption{Red
-		para una gramática estándar. } \label{fig1} \end{figure}
+		El patrÃ³n mÃ¡s cercano (segÃºn la distancia euclÃ­dea) a los coeficientes
+		calculados para una ventana, se considera el ganador de la ventana.
+		La vocal ganadora es aquella con mayor cantidad de patrones ganadores.
 
-		\begin{figure}[tbhp] \centerline{\includegraphics[scale=0.75]{gammas}}
-		\caption{Influencia de las constantes de penalización $\gamma$.}
-		\label{fig2} \end{figure}
+	\subsection{IdentificaciÃ³n de la consonante}
+	\subsubsection{Patrones para detecciÃ³n de consonantes}
 
-		Al igual que en las figuras, es preferible que las tablas se encuentren
-		al principio o al pie de una columna. El tamaño del texto dentro de las
-		tablas no debería ser inferior a 7 pt ni mayor a 10 pt.
+		La base de datos para detectar la consonante estÃ¡ constituida por una
+		matriz por cada una de las seÃ±ales utilizadas como patrÃ³n las cuales
+		contienen caracterÃ­sticas estadÃ­sticas del espectro de frecuencia en
+		ventanas tomadas a lo largo del tiempo de la seÃ±al.
 
-		Un ejemplo de este estilo puede verse a continuación en la Tabla I.
+		Para la  generaciÃ³n de cada matriz realizamos un ventaneo, mediante
+		ventanas de Hanning de tamaÃ±o fijo (aproximadamente $10 ms$) a lo largo
+		de toda la seÃ±al y luego descartamos aquellas en las que su energÃ­a no
+		superaba un determinado umbral ya que Ã©stas eran consideradas silencio.
 
-		\begin{table}[htbp] \caption{Resultados finales y reducción relativa de
-		los errores (promedios sobre 10 particiones de entrenamiento y prueba).}
-		\begin{center} \begin{tabular}{l|c|c|c|c} \hline Errores de     & SER
-		& WER  & WAER & Reducción \\ reconocimiento & {\%}   & {\%} & {\%} &
-		{\%}WER   \\ \hline Referencia& 38.30& 7.54& 8.53&    -- \\ HMM-PASS  &
-		30.55& 5.36& 6.67& 28.91 \\ T-PASS    & 25.50& 4.76& 5.70& 36.87 \\
-		\hline \end{tabular} \end{center} \label{tab1} \end{table}
+		Luego, de todas las ventanas obtenidas tomamos solo las que correspondÃ­an
+		al primer cuarto de la seÃ±al porque consideramos que en ese sector
+		estarÃ­a contenida la informaciÃ³n de la consonante.
 
-	\subsection{Las citas bibliográficas}
+		A continuaciÃ³n, aplicamos la transformada rÃ¡pida de Fourier a cada
+		ventana y calculamos la media, desvÃ­o estÃ¡ndar, asimetrÃ­a y curtosis
+		de cada una mediante la funciÃ³n statistics de octave.
 
-		Las citas bibliográficas se realizan entre corchetes, por ejemplo
-		[1]. Cuando se hacen citas múltiples utilice la coma para dos citas
-		[2], [3] o bien la notación de rangos de citas [2]-[5]. No utilice
-		términos particulares antes de la cita, como en la ``referencia [2]''
-		o en ``Ref. [4]''. El estilo general para las referencias bibliográficas
-		se muestra con varios ejemplos en la sección correspondiente al final de
-		este documento. Observe estrictamente el estilo propuesto: la utilización
-		de tipografía, las mayúsculas, la forma de nombrar a los autores, los
-		datos requeridos para libros, revistas y congresos, etc.
+		De esta manera obtuvimos una matriz de $4 \times n$ elementos donde cada fila
+		contiene la informaciÃ³n de cada medida estadÃ­stica y la cantidad $n$
+		de columnas estÃ¡ determinada por el nÃºmero de ventanas que contendrÃ­an
+		la informaciÃ³n de la consonante que es variable en cada seÃ±al.
 
-		La sección de referencias posee un estilo particular para el párrafo y
-		la numeración. Éstas se deben presentar preferentemente por orden de
-		aparición en el texto pero también se aceptarán por orden alfabético
-		del apellido del primer autor.
+		
+		\begin{figure}
+			\includegraphics[width=0.5\textwidth]{imagen/caracteristicas.png}
+			\caption{
+				DesvÃ­o ($*$) y asimetrÃ­a ($\circ$) a lo largo del tiempo
+				en el sector correspondiente a la consonante
+			}
+			\label{fig:tracto}
+		\end{figure}
 
-	\subsection{Otras recomendaciones generales}
 
-		Defina adecuadamente cada uno de los acrónimos la primera vez que aparece
-		en el texto (salvo en el resumen), por ejemplo, relación de grandes masas
-		(RGM). Luego utilice siempre el acrónimo en lugar del término completo.
+	\subsubsection{Procedimiento para determinar la consonante}
 
-		Recuerde definir cada uno de los símbolos que aparecen en las ecuaciones
-		y aclarar la notación cuando se utilizan operadores matemáticos especiales
-		o poco comunes.
+		El procedimiento aplicado para detectar la consonante en cada dÃ­gito que
+		queremos identificar consiste en primer lugar en obtener la matriz con
+		las medidas estadÃ­sticas del espectro de frecuencia de la misma forma
+		que generamos las matrices de las seÃ±ales patrones. En segundo lugar
+		aplicamos el algoritmo Dynamic Time Warping  para lograr que la matriz
+		obtenida de esta seÃ±al y cada una de las de la base de datos tengan la
+		misma dimensiÃ³n  y utilizamos el costo que obtuvo este algoritmo para
+		identificar la consonante de la seÃ±al analizada.
 
-		Observe la utilización de mayúsculas, como regla general se coloca
-		mayúscula en la primer letra de la primer palabra de cada frase y los
-		nombres propios, tanto en los títulos como en el texto en general.
+		Como dijimos en la introducciÃ³n, los nÃºmeros en el lenguaje Lojban
+		estÃ¡n conformados por una consonante y una vocal, por lo que en
+		la mayorÃ­a de los casos con saber la vocal quedan solo $2$ dÃ­gitos
+		candidatos. Por lo tanto luego de haber extraÃ­do la vocal en el paso
+		anterior ahora realizamos la evaluaciÃ³n para la consonante en los $5$
+		patrones de cada uno de los dÃ­gitos que comparten la vocal obtenida por
+		lo que en vez de tener que hacer $50$ evaluaciones, hacemos $10$ para los
+		dÃ­gitos cuyas vocales son a, e, i; $15$ para 0 y en el caso del dÃ­gito
+		cuya vocal es u ya queda determinado porque es el Ãºnico que contiene
+		dicha vocal.
 
-\section{Formato electrónico de envío}
 
-	Hasta la fecha indicada en el sitio web del congreso se recibirán:
-	el artículo completo de 4 páginas en formato PDF y el título, resumen,
-	palabras clave y datos de los autores en formato de texto ASCII puro.
+\section{Resultados}
+	\begin{table}
+	\[
+		\begin{array}{cccccccccc}
+10 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 10 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 8 & 0 & 0 & 0 & 0 & 1 & 0 & 1 \\
+0 & 0 & 0 & 8 & 0 & 0 & 0 & 1 & 1 & 0 \\
+0 & 0 & 0 & 0 & 7 & 2 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 & 0 & 0 \\
+0 & 3 & 0 & 0 & 0 & 0 & 7 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 10 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 10 \\
+		\end{array}
+	\]
+		\caption{Matriz de confusiÃ³n para una $SNR > 40dB$.\\
+		Porcentaje de aciertos de $90\%$}
+	\end{table}
 
-	Dado que el proceso de revisión se realizará por el sistema de doble
-	ciego, solicitamos que \textit{no} se incluyan los nombres y datos de
-	autores en el artículo completo enviado para la revisión. En lugar de
-	estos datos deje simplemente las leyendas bajo el título tal como figuran
-	en este ejemplo. Estos datos deberán incluirse en el archivo de texto
-	y en la versión final de documento completo (ya revisado, aprobado y
-	listo para imprimir).
+	\begin{table}
+	\[
+		\begin{array}{cccccccccc}
+0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 5 & 0 & 0 & 0 & 4 \\
+1 & 0 & 0 & 0 & 0 & 9 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 9 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 5 & 0 & 0 & 5 & 0 \\
+0 & 0 & 0 & 0 & 1 & 6 & 0 & 0 & 0 & 3 \\
+0 & 0 & 0 & 1 & 0 & 8 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 10 & 0 \\
+0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 & 0 & 0 \\
+		\end{array}
+	\]
+		\caption{Matriz de confusiÃ³n para una $SNR=30dB$. \\
+		El porcentaje de aciertos es paupÃ©rrimo $24\%$}
+	\end{table}
 
-	A continuación se detalla como generar cada uno de estos archivos.
-
-	\subsection{Artículo completo para la revisión}
-
-		El formato en que se reciben los artículos completos es PDF hasta
-		la versión 1.4. Para los usuarios de \LaTeX\ se recomienda utilizar
-		directamente el programa pdflatex. Si no contara con este programa en
-		alguna distribución de \LaTeX, también es posible utilizar la secuencia
-		latex, dvips y ps2pdf.
-
-		Para los usuarios de Word que no conozcan un método para convertir sus
-		documentos a PDF, le damos a continuación una serie de instrucciones
-		que le facilitarán esta tarea.
-
-		En primer lugar deberá descargar e instalar los siguientes programas
-		gratuitos (en este mismo orden):
-
-		\begin{enumerate} \item Impresora
-		PostScript\footnote{http://www.adobe.com/products/printerdrivers/main.html}:
-		se instala como una impresora y le permitirá imprimir el documento
-		en formato PS. Durante la instalación elija FILE como puerto para la
-		impresora.
-
-		\item Intérprete
-		PostScript\footnote{http://www.cs.wisc.edu/~ghost/doc/AFPL/get704.htm}:
-		recomendamos en este caso el intérprete GhostScript, que se ecuentra
-		disponible gratuitamente para diferentes sistemas operativos.
-
-		\item Visualizador
-		PostScript\footnote{http://www.cs.wisc.edu/~ghost/gsview/}: GSView
-		utiliza al intérprete anterior para previsualizar archivos PS y para
-		convertirlos en PDF.  \end{enumerate}
-
-		Para la conversión PDF se utiliza el formato intermedio PS. En primer
-		logar se imprime el documento en la impresora PostScript. El archivo
-		quedará con extensión .prn y es necesario cambiarla manualmente a .ps. Una
-		vez obtenido el archivo PS se debe abrir con GSView y seleccionar la
-		opción para ``convertir... '' del menú de archivos. Mediante la opción
-		pdfwrite y utilizando la máxima resolución disponible, podrá convertir
-		finalmente todas las páginas de su PS a PDF.
-
-	\subsection{Resumen y datos de autores en texto ASCII}
-
-		En un archivo de texto estándar (.txt) y sin caracteres ni formatos
-		especiales se deben incluir los siguientes datos en castellano y en
-		inglés:
-
-		- Título del trabajo
-
-		- Nombre completo del 1er autor
-
-		- Institución a la que pertenece el 1er autor
-
-		- Datos del 1er autor (dirección, TE/FAX, email, etc)
-
-		- Nombre completo y datos de los coautores
-
-		- Resumen (el mismo del artículo completo)
-
-		- Palabras clave
-
-	\subsection{Versión final del artículo}
-
-		Una vez aprobado para la publicación e implementadas las correcciones
-		sugeridas por los revisores, se deberá enviar el artículo final en
-		formato PDF. Este archivo deberá tener como nombre el mismo código
-		entregado durante la revisión (COD-PAIS\_NRO) y .pdf como extensión.
-
-		La versión final deberá incluir, debajo del título, los nombres de los
-		autores y la información de la institución a la que pertenecen (tal como
-		se indica en este ejemplo).
-
+	\begin{table}
+	\[
+		\begin{array}{cccccccccc}
+10 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 7 & 0 & 0 & 0 & 0 & 3 & 0 & 0 & 0 \\
+0 & 0 & 9 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 9 & 0 & 0 & 0 & 0 & 1 & 0 \\
+1 & 0 & 0 & 0 & 6 & 0 & 0 & 0 & 0 & 3 \\
+0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 & 0 & 0 \\
+0 & 3 & 0 & 0 & 0 & 0 & 7 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 10 & 0 & 0 \\
+0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 6 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 10 \\
+		\end{array}
+	\]
+		\caption{EvaluaciÃ³n de la clasificaciÃ³n de la consonante. \\
+		Matriz de confusiÃ³n para una $SNR=20dB$ \\
+		Porcentaje de aciertos de $84\%$}
+	\end{table}
+	
+%ejemplo
 \section{Conclusiones}
 
-	En las conclusiones debería presentarse una revisión de los puntos
-	clave del artículo con especial énfasis en el análisis y discusión
-	de los resultados que se realizó en las secciones anteriores y en las
-	aplicaciones o ampliaciones de éstos. No debería reproducirse el resumen
-	en esta sección.
+	En las conclusiones deberÃ­a presentarse una revisiÃ³n de los puntos
+	clave del artÃ­culo con especial Ã©nfasis en el anÃ¡lisis y discusiÃ³n
+	de los resultados que se realizÃ³ en las secciones anteriores y en las
+	aplicaciones o ampliaciones de Ã©stos. No deberÃ­a reproducirse el resumen
+	en esta secciÃ³n.
 
-	Incluya en esta sección y en la sección de discusión sus propias críticas
+	Incluya en esta secciÃ³n y en la secciÃ³n de discusiÃ³n sus propias crÃ­ticas
 	y conclusiones sobre el trabajo.
 
-	Si se trata de un análisis crítico de una publicación científica, no
-	olvide citar el artículo original en el que se baso tu trabajo.
+	Si se trata de un anÃ¡lisis crÃ­tico de una publicaciÃ³n cientÃ­fica, no
+	olvide citar el artÃ­culo original en el que se baso tu trabajo.
 
-\section{Apéndices}
+\section{ApÃ©ndices}
 
-	En algunas situaciones conviene incluir una sección de apéndices con
+	En algunas situaciones conviene incluir una secciÃ³n de apÃ©ndices con
 	sus correspondientes subsecciones.
 
 	\subsection{Demostraciones}
 
-		Cuando la extensión y complejidad de las demostraciones lo justifique
+		Cuando la extensiÃ³n y complejidad de las demostraciones lo justifique
 		en pos de no distraer al lector presentando en el texto solamente los
 		resultados finales.
 
@@ -327,9 +311,9 @@ el título.
 
 		Cuando sus extensiones lo justifiquen y no sean parte central del trabajo.
 
-	\subsection{Detalles técnicos}
+	\subsection{Detalles tÃ©cnicos}
 
-		Tablas con datos técnicos o mediciones accesorias que se utilizaron en
+		Tablas con datos tÃ©cnicos o mediciones accesorias que se utilizaron en
 		el trabajo.
 
 \section*{Agradecimientos}

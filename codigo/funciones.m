@@ -8,12 +8,13 @@ source pvsample.m
 source simmx.m
 
 function r = autocorrelacion(y)
-	r = zeros(size(y));
-	n = length(r);
-	y = [y;zeros(n,1)];
-	for K=[1:n]
-		r(K) = dot( y(1:n), y(K:n+K-1) );
-	end
+	r = autocor(y);
+	%r = zeros(size(y));
+	%n = length(r);
+	%y = [y;zeros(n,1)];
+	%for K=[1:n]
+	%	r(K) = dot( y(1:n), y(K:n+K-1) );
+	%end
 end
 
 function [R, r] = matrix_wiener_hopf(s,orden)
@@ -306,20 +307,26 @@ end
 
 
 function dif = comparar(m1,m2,m3,m4, num)
-	m = [m1,m2,m3,m4]';
+	%max = [2.05813857 12.0806228 15.0959306 245.95556];
+	max = [1.697430	8.279271 10.857321 124.645135];
+	m = [m1/max(1),m2/max(2),m3/max(3),m4/max(4)]';
+	%m = [m1,m2,m3,m4]';
 	distancia = [];
-	for K=[1:5]
-		archivo = sprintf('./momentos/%d/%d.txt',num,K);
+	for K=[0:4]
+		%archivo = sprintf('./momentos/%d/%d.txt',num,K);
+		archivo = sprintf('./patrones_nuevos512/patron%d-%d.txt',num,K);
 		patron = load(archivo);
+		for i = 1:4
+			patron(:,i) = patron(:,i)/max(i);
+		end
 		SM = simmx(m,patron');
 		[p,q,C] = dp(1-SM);
 		distancia = [distancia;C(size(C,1),size(C,2))];
 	end
 	dif = min(distancia);
-	dif
 end
 
-function clase = clasificador(m1,m2,m3,m4, vocal)
+function [clase,costo] = clasificador(m1,m2,m3,m4, vocal)
 	parecidos = inf*ones(10,1);
 
 	contra = [1 6 6; 2 7 7; 3 8 8; 0 4 9; 5 5 5];
@@ -335,31 +342,64 @@ function clase = clasificador(m1,m2,m3,m4, vocal)
 			break;
 		end
 	end
+	costo = minimo;
 end
 
 
 function clasificado = clasificador_estadistico(signal, vocal, digito)
-	signal=cortar2(signal);	
-	%n = ceil(length(signal)/51);
-	n = 512;
-	momentos = [];
-	[frames,t] = ventaneo(signal, n, 2, hanning(n));
-	for K=[1:size(frames)(2)]
-		x = frames(:,K);
-		x = abs(fft(x));
-		e = statistics(x);
-		momentos = [momentos,e];
-	end
-	%m1 = momentos(6,1:100)';
-	%m2 = momentos(7,1:100)';
-	%m3 = momentos(8,1:100)';
-	%m4 = momentos(9,1:100)';
-
-	m = momentos(6:9,:)';
-
-	clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), vocal);
+		umbral = 0.5*dot(signal,signal)/length(signal);		
+		n = 512;
+		[frames,t] = ventaneo(signal, n, 2, hanning(n));
+		t2 = [];
+		momentos = [];
+		%transformada = [];
+		for K=[1:size(frames)(2)]
+			e = [];
+			x = frames(:,K);
+			energia = dot(x,x)/(n*0.374); %compensar el ventaneo
+			%eliminar las ventanas de silencio
+			if energia>umbral
+				x = abs(fft(x));
+				e = statistics(x);
+				momentos = [momentos,e];
+				%transformada = [transformada,x(1:length(x)/2)];
+				t2 = [t2, t(K)];
+			end
+		end
+		c = ceil(size(momentos)(2)/4);
+		m = momentos(6:9,1:c)';
+		%figure(2);
+		%plot(transformada);
+		%pause;
 		
-	sprintf('Era: %d - Fue clasificado como: %d', digito, clasificado)
+		%Versión real
+		%[clasificado,costo] = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), vocal); %Sin normalizar
+	%	if vocal==5
+	%		[clase2,costo2] = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), 4); %Sin normalizar
+	%		if costo2<costo
+	%			clasificado = clase2;
+	%		end
+	%	end
+		%clasificado = clasificador(m(:,1)/max(m(:,1)),m(:,2)/max(m(:,2)),m(:,3)/max(m(:,3)),m(:,4)/max(m(:,4)), vocal); %Normalizado
+		
+		
+	%sprintf('Era: %d - Fue clasificado como: %d', digito, clasificado)
+		% le decimos q vocal es así vemos q tal clasifica la consonante
+		if (digito== 0 || digito == 4 || digito == 9)
+				clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), 4); %Sin normalizar
+		end
+		if (digito== 2 || digito == 7)
+				clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), 2); %Sin normalizar
+		end
+		if (digito== 1 || digito == 6)
+				clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), 1); %Sin normalizar
+		end
+		if (digito== 3 || digito == 8)
+				clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), 3); %Sin normalizar
+		end
+		if (digito == 5)
+				clasificado = clasificador(m(:,1),m(:,2),m(:,3),m(:,4), 5); %Sin normalizar
+		end
 
 end
 
